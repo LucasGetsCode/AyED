@@ -2,17 +2,23 @@ package aed;
 
 class VectorDeInts implements SecuenciaDeInts {
     private static final int CAPACIDAD_INICIAL = 1;
+    private Array<Int> arr;
 
     public VectorDeInts() {
-        throw new UnsupportedOperationException("No implementada aun");
+        Array<Int> res = new Array<Int>(0);
+        return res;
     }
 
     public VectorDeInts(VectorDeInts vector) {
-        throw new UnsupportedOperationException("No implementada aun");
+        Array<Int> res = new Array<Int>(vector.longitud());
+        for (int i = 0; i < vector.longitud(); i++) {
+            res[i] = vector.arr[i];
+        }
+        return res;
     }
 
     public int longitud() {
-        return len(arr);
+        return len(this.arr);
     }
 
     public void agregarAtras(int e) {
