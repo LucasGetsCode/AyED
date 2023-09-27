@@ -2,6 +2,7 @@
 
 \input{AEDmacros}
 \usepackage{caratula} % Version modificada para usar las macros de algo1 de ~> https://github.com/bcardiff/dc-tex
+\usepackage{listings}
 
 
 \titulo{Trabajo Práctico 1: Especificación y WP}
@@ -12,10 +13,10 @@
 \materia{Algoritmos y Estructuras de Datos}
 \grupo{Grupo.java}
 
-\integrante{Apellido, Nombre1}{001/01}{email1@dominio.com}
-\integrante{Apellido, Nombre2}{002/01}{email2@dominio.com}
-\integrante{Apellido, Nombre3}{003/01}{email3@dominio.com}
-\integrante{Apellido, Nombre4}{004/01}{email4@dominio.com}
+\integrante{Pujia, Lucas}{481/23}{lucas.pujia@gmail.com}
+\integrante{Praino, Luna}{77/23}{prainolunaa@gmail.com}
+\integrante{Rozas, Antuanette}{571/23}{antuanetterozas@gmail.com}
+\integrante{Miranda, Santiago}{418/18}{san\_chan97@hotmail.com}
 % Pongan cuantos integrantes quieran
 
 % Declaramos donde van a estar las figuras
@@ -28,77 +29,960 @@
 
 \section{Especificación}
 \begin{enumerate}
+
+% hayBallotage
     \item \textbf{hayBallotage}: verifica si hay ballotage en la elección presidencial.
     \begin{proc}{hayBallotage}{\In escrutinio: \TLista{\ent}}{\bool}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{condicionesBasicas(escrutinio, 1)}
-	\asegura{\res = \neg (tieneMas45\%(escrutinio) \lor tieneMas40\%Diferencia10\%(escrutinio))}
+    %    \modifica{parametro1, parametro2,..}
+    \requiere{condicionesBasicas(escrutinio, 1)}
+    \asegura{\res = \neg (tieneMas45\%(escrutinio) \lor tieneMas40\%Diferencia10\%(escrutinio)}
  
     \pred{tieneMas45\%}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i}{\ent}{0 \leq i< \longitud{escrutinio}-1 \yLuego escrutinio[i]\neq 0 \yLuego porcentaje(escrutinio, i) > 45}}
     
-    \pred{tieneMas40\%Diferencia10\%}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i}{\ent}{0 \leq i< \longitud{escrutinio}-1\yLuego escrutinio[i]\neq 0 \yLuego (porcentaje(escrutinio, i) > 40 \land \\ \existe[unalinea]{j}{\ent}{(0 \leq j < \longitud{escrutinio} - 1 \yLuego escrutinio[j] \neq 0 \land j \neq i) \yLuego \\ porcentaje(escrutinio, i) - porcentaje(escrutinio, j) > 10})}}
+    \pred{tieneMas40\%Diferencia10\%}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i}{\ent}{0 \leq i< \longitud{escrutinio}-1\yLuego escrutinio[i]\neq 0 \yLuego (porcentaje(escrutinio, i) > 40 \land 
+    \\ \paraTodo[unalinea]{j}{\ent}{(0 \leq j < \longitud{escrutinio} - 1 \yLuego escrutinio[j] \neq 0 \land j \neq i) \yLuego \\ porcentaje(escrutinio, i) - porcentaje(escrutinio, j) > 10})}}
 \end{proc}
 
+
+% hayFraude
     \item \textbf{hayFraude}: verifica que los votos válidos de los tres tipos de cargos electivos sumen lo mismo.
     \begin{proc}{hayFraude}{\In escrutinio\_presidencial: \TLista{\ent}, \In escrutinio\_senadores: \TLista{\ent}, \In escrutinio\_diputados: \TLista{\ent}}{\bool}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{condicionesBasicas(escrutinio\_presidencial,1)\yLuego \\condicionesBasicas(escrutinio\_senadores,2) \yLuego \\ condicionesBasicas(escrutinio\_diputados,1)}
-	\asegura{expresionBooleana2}
+    %    \modifica{parametro1, parametro2,..}
+    \requiere{condicionesBasicas(escrutinio\_presidencial,1)\land condicionesBasicas(escrutinio\_senadores,2) \land \\ condicionesBasicas(escrutinio\_diputados,1) \land algunoSuperaUmbralElectoral(escrutinio\_diputados)}
+    \asegura{\res = \True \iff sumaTotal(escrutinio\_presidencial) = sumaTotal(escrutinio\_senadores)  \land \\ sumaTotal(escrutinio\_presidencial) = sumaTotal(escrutinio\_diputados}
 \end{proc}
 
+
+% obtenerSenadoresEnProvincia
     \item \textbf{obtenerSenadoresEnProvincia}: obtiene los id de los partidos (primero y segundo) para la elección de senadores en una provincia. El id es el índice de las listas escrutinios.
     \begin{proc}{obtenerSenadoresEnProvincia}{\In escrutinio: \TLista{\ent}}{$\ent \times \ent$}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{expresionBooleana1}
-	\asegura{expresionBooleana2}
-\end{proc}
+    %    \modifica{parametro1, parametro2,..}
+    \requiere{condicionesBasicas(escrutinio, 2)}
+    \asegura{esElPrimerPartido(escrutinio, res_0) \land esElSegundoPartido(escrutinio, res_1)}
  
-    \item \textbf{calcularDHondtEnProvincia}: calcula los cocientes según el método d’Hondt para diputados en una provincia (importante: no es necesario ordenar los partidos por cantidad de votos)
-    \begin{proc}{calcularDHondtEnProvincia}{\In cant\_bancas: \ent, \In escrutinio: \TLista{\ent}}{\TLista{\TLista{\ent}}}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{condicionesBasicas(escrutinio, 1) \yLuego superanUmbralElectoral(escrutinio, 1) \land cant\_bancas > 0}
-	\asegura{\longitud{res}=\longitud{escrutinio}-1 \yLuego \paraTodo{i, j}{\ent}{0 \leq i < \longitud{res} \implicaLuego \longitud{res[i]}=cant\_bancas \yLuego \\ 0 \leq j < \longitud{res[i]} \implicaLuego res[i][j] = \lfloor \frac{escrutinio[i]}{1+j} \rfloor}}
+     \pred{esElPrimerPartido}{s: \TLista{\ent}, i: \ent}{i \neq |s| - 1 \land  \paraTodo[unalinea]{j}{\ent}{0 \leq j < |s| \implicaLuego s[i] \geq s[j]}}
+
+    \pred{esElSegundoPartido}{s: \TLista{\ent}, i: \ent}{i \neq |s| - 1 \land \neg esElPrimerPartido(s, s[i]) \land \paraTodo[unalinea]{j}{\ent}{0 \leq j < |s| \land \neg esElPrimerPartido(s, s[j]) \implicaLuego s[i] \geq s[j]}}
+
+   
 \end{proc}
 
+
+
+
+
+ % calcularDHondtEnProvincia
+    \item \textbf{calcularDHondtEnProvincia}: calcula los cocientes según el método d’Hondt para diputados en una provincia (importante: no es necesario ordenar los partidos por cantidad de votos)
+    \begin{proc}{calcularDHondtEnProvincia}{\In cant\_bancas: \ent, \In escrutinio: \TLista{\ent}}{\TLista{\TLista{\ent}}}
+    %    \modifica{parametro1, parametro2,..}
+    \requiere{condicionesBasicas(escrutinio, 1) \yLuego algunoSuperaUmbralElectoral(escrutinio) \land cant\_bancas > 0}
+    \asegura{\longitud{res}=\longitud{escrutinio}-1 \yLuego \paraTodo{i, j}{\ent}{0 \leq i < \longitud{res} \implicaLuego \longitud{res[i]}=cant\_bancas \yLuego \\ 0 \leq j < \longitud{res[i]} \implicaLuego res[i][j] = \IfThenElse{porcentaje(escrutinio, i) > 3}{\lfloor \frac{escrutinio[i]}{1+j} \rfloor}{0}}}
+\end{proc}
+
+
+% obtenerDiputadosEnProvincia
     \item \textbf{obtenerDiputadosEnProvincia}: calcula la cantidad de bancas de diputados obtenidas por cada partido en una provincia
-    \begin{proc}{obtenerDiputadosEnProvincia}{\In cant\_bancas: \ent, \In dHondt: \TLista{\TLista{\ent}}}{\TLista{\ent}}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{esMatriz(dHondt) \yLuego (estaOrdenado(dHondt) \land cocientesPositivos(dHondt) \land \\ noExistenCocientesRepetidos(dHondt) \land 0 < cant\_bancas \leq \longitud{dHondt[0]} )}
-	\asegura{\longitud{res} = \longitud{dHondt} \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{res} \implicaLuego 0 \leq res[i] \leq cant\_bancas} \land \\ \displaystyle\sum_{i=0}^{\longitud{res}-1} res[i] = cant\_bancas \land distribucionBancasCocientes(cant\_bancas, dHondt)}
+    \begin{proc}{obtenerDiputadosEnProvincia}{\In cant\_bancas: \ent, \In escrutinio: \TLista{\ent}, \In dHondt: \TLista{\TLista{\ent}}}{\TLista{\ent}}
+    %    \modifica{parametro1, parametro2,..}
+    \requiere{esMatriz(dHondt) \yLuego (cocientesOrdenados(dHondt) \land cocientesPositivos(dHondt) \land \\ noExistenCocientesRepetidos(dHondt) \land correspondeEscrutinio(dHondt, escrutinio) \land 0 < cant\_bancas \leq \longitud{dHondt[0]})}
+    \asegura{\longitud{res} = \longitud{dHondt} \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{res} \implicaLuego 0 \leq res[i] \leq cant\_bancas} \land \\ \displaystyle\sum_{i=0}^{\longitud{res}-1} res[i] = cant\_bancas \land distribucionBancasCocientes(cant\_bancas, dHondt, res)}
  
-    \pred{esDHondtValido}{\In dH: \TLista{\TLista{\ent}}}{esMatriz(dH) \yLuego (estaOrdenado(dH) \land cocientesPositivos(dH))}
+    \pred{esDHondtValido}{\In dH: \TLista{\TLista{\ent}}}{esMatriz(dH) \yLuego (cocientesOrdenados(dH) \land cocientesPositivos(dH))}
 
     \pred{esMatriz}{\In matriz: \TLista{\TLista{\ent}}}{\longitud{matriz} > 0 \yLuego \longitud{matriz[0]} > 0 \yLuego (\paraTodo[unalinea]{l}{\ent}{0 < l < \longitud{matriz} \implicaLuego \longitud{matriz[l]} = \longitud{matriz[l-1]}} }
 
-    \pred{estaOrdenado}{\In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i, j}{\ent}{0 \leq i < \longitud{dH} \land 0 \leq j < \longitud{dH[0]} \implicaLuego \\ (dH[i][0] \geq dH[i][j] * (j+1) \land dH[i][0] < (dH[i][j]+1) * (j+1)))}}
+    \pred{cocientesOrdenados}{\In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i, j}{\ent}{0 \leq i < \longitud{dH} \land 0 \leq j < \longitud{dH[0]} \implicaLuego \\ (dH[i][0] \geq dH[i][j] * (j+1) \land dH[i][0] < (dH[i][j]+1) * (j+1)))}}
 
     \pred{cocientesPositivos}{\In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i, j}{\ent}{0 \leq i < \longitud{dH} \land 0 \leq j < \longitud{dH[0]} \implicaLuego dH[i][j] \geq 0}}
     
     \pred{noExistenCocientesRepetidos}{\In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j,i',j'}{\ent}{0\leq i,i' < \longitud{dH} \land 0 \leq j,j' < \longitud{dH[0]} \land (i = i' \implica j \neq j') \implicaLuego dH[i][j] \neq dH[i'][j']}}
+
+    \pred{correspondeEscrutinio}{\In dH: \TLista{\TLista{\ent}}, \In escr: \TLista{\ent}}{\paraTodo[unalinea]{partido}{\ent}{0 \leq partido < \longitud{dH} \implicaLuego \paraTodo[unalinea]{j}{\ent}{0 \leq j < \longitud{dH[partido]} \implicaLuego \\ dH[partido][j] = \IfThenElse{porcentaje(escrutinio, partido) > 3}{\lfloor \frac{escrutinio[partido]}{1+j} \rfloor}{0}}}}
     
-    \pred{distribucionBancasCocientes}{\In cant\_bancas: \ent, \In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0\leq i < \longitud{res} \implicaLuego (\displaystyle\sum_{part=0}^{\longitud{dH}-1} (\displaystyle\sum_{coc=0}^{\longitud{dH[0]}-1} \IfThenElse{dH[part][coc] > dH[i][res[i]]}{1}{0})) \geq cant\_bancas}}
+    \pred{distribucionBancasCocientes}{\In cant\_bancas: \ent, \In dH: \TLista{\TLista{\ent}}, \In res: \TLista{\ent}}{\paraTodo[unalinea]{i}{\ent}{0\leq i < \longitud{res} \implicaLuego \\ (res[i] \neq cant\_bancas \implicaLuego \displaystyle\sum_{part=0}^{\longitud{dH}-1} \displaystyle\sum_{coc=0}^{\longitud{dH[0]}-1} \IfThenElse{dH[part][coc] > dH[i][res[i]]}{1}{0} > cant\_bancas) \land \\ (res[i] = cant\_bancas \implicaLuego \paraTodo[unalinea]{j}{\ent}{(0 \leq j < \longitud{res} \land j \neq i) \implicaLuego dh[i][res[i]-1] > dH[j][0]} }}
+    % El res va a ser, por ejemplo para una cant_bancas = 7, [1,0,3,0,2,1,0]. Entonces si el tercer partido (id=2) obtiene 3 bancas, signfica que su cuarto
+    % cociente (dHondt[2][3]) va a tener 7 o más cocientes que él, ya sabemos que 3 sí o sí, pues al estar ordenado los primeros 3 cocientes son los más
+    % grandes. Luego, sabemos que este cociente no consiguió una banca, por lo tanto no es mayor ni que el [0][0], [4][0], [4][1] o [5][0], que son 4, y
+    % sumados a los otros 3 tenemos el mínimo de 7. Si agarrase un cociente de índice menor, por ejemplo el tercer cociente del tercero partido, sé que 
+    % todos los que no consiguieron una banca son menores a este cociente, pues sí la consiguió, y como solo hay 7 bancas para distribuir y una ya es suya,
+    % no puede haber más de 7 cocientes mayores, a lo sumo 7.
+    % Luego, por qué no puede ser un índice mayor? Qué pasa si agarro el quinto cociente del tercer partido? Bueno, la condición se cumple, va a haber 7
+    % o más cocientes mayores seguro, pero el tema es que la suma de las bancas otorgadas tiene que dar las bancas disponibes, entonces si este cociente
+    % crece otro tiene que decrecer, ya que tampoco puede haber negativos, y por lo visto anteriormente no se pueden achicar los cocientes. Por lo tanto
+    % res es la única combinación posible. 
+    % Qué le pasa a distribucionBancasCocientes si un partido consigue todas las bancas? dH[i][res[i]] puede salirse de rango, pues si fuesen 3 bancas y
+    % res fuese [0,3,0] y i=1, dh[1][res[1]] = dh[1][3], y |dH[1]| puede no ser mayor a 3, y entonces indefinirse. Para eso se mira un caso aparte
 \end{proc}
 
+
+% validarListasDiputadosEnProvincia
     \item \textbf{validarListasDiputadosEnProvincia}: verifica que la listas de diputados de cada partido en una provincia contenga exactamente la misma cantidad de candidatos que bancas en disputa en esa provincia, y que además se cumpla la alternancia de géneros.
     \begin{proc}{validarListasDiputadosEnProvincia}{\In cant\_bancas: \ent, \In listas: \TLista{\TLista{$dni : $\ent\ \times$ genero : \ent$}}}{\bool}
-	%    \modifica{parametro1, parametro2,..}
-	\requiere{expresionBooleana1}
-	\asegura{expresionBooleana2}
+    %    \modifica{parametro1, parametro2,..}
+    \requiere{cant\_bancas > 0 \land generoEs1o0(listas[i]) \land \longitud{listas} > 0}
+    \asegura{\res = \True \iff \paraTodo[]{partido}{\ent}{0 \leq partido < \longitud{listas} \implicaLuego \longitud{listas[partido]} = cant\_bancas \land estaAlternado(listas[partido])}}
+
+    \pred{generoEs1o0}{\In listas: \TLista{\TLista{$dni : $\ent\ \times$ genero : \ent$}}}{\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{listas} \implicaLuego \paraTodo[]{j}{\ent}{0 \leq j < \longitud{listas[i]} \implicaLuego listas[i][j]_1 = 1 \lor listas[i][j]_1 = 0}}}
+    \pred{estaAlternado}{\In lista: \TLista{$dni : $\ent\ \times$ genero : \ent$}}{\paraTodo[unalinea]{j}{\ent}{0 < j < \longitud{lista[j]} \implicaLuego lista[j]_1 \neq lista[j-1]_1}}
 \end{proc}
+
+
 
     \item \textbf{Auxiliares y predicados sueltos}\\[1ex]
     \pred{condicionesBasicas}{\In escrutinio: \TLista{\ent}, \In partidos : \ent}
     {hayPartidosYblancos(escrutinio, partidos)\yLuego (\neg hayVotosNegativos(escrutinio)\land\neg hayEmpate(escrutinio))}
     \pred{hayPartidosYblancos}{\In escrutinio: \TLista{\ent}, \In partidos : \ent} {\longitud{escrutinio}\geq partidos+1}
     \pred{hayVotosNegativos}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i}{\ent}{0 \leq i< \longitud{escrutinio} \yLuego escrutinio[i]<0}}
-    \pred{hayEmpates}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i,j}{\ent}{(0 \leq i,j< \longitud{escrutinio}-1 \land i\neq j) \implicaLuego escrutinio[i]=escrutinio[j]}}
-    \pred{superanUmbralElectoral}{\In escrutinio: \TLista{\ent}, \In cantidad: \ent} {(\displaystyle\sum_{i=0}^{\longitud{lista}-2} \IfThenElse{porcentaje(i, escrutinio) > 3}{1}{0}) \geq cantidad}
+    \pred{hayEmpates}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i,j}{\ent}{(0 \leq i,j< \longitud{escrutinio}-1 \land i\neq j) \yLuego escrutinio[i]=escrutinio[j]}}
+    \pred{algunoSuperaUmbralElectoral}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{partido}{\ent}{partido \neq \longitud{escrutinio}-1 \land
+    escrutinio[partido] \neq 0 \yLuego porcentaje(partido, escrutinio) > 3}}
+    %\displaystyle\sum_{i=0}^{\longitud{lista}-2} \IfThenElse{porcentaje(i, escrutinio) > 3}{1}{0}) \geq cantidad}
+
+    \aux{sumaTotal}{\In lista: \TLista{\ent}}{ \ent }{ \displaystyle\sum_{i=0}^{\longitud{lista}-1} lista[i]}
+    \aux{porcentaje}{\In lista: \TLista{\ent}, \In indice: \ent}{ \float }{ 100*\frac{sumaTotal(lista)}{lista[indice]} }
     
-    \aux{porcentaje}{\In lista: \TLista{\ent}, \In indice: \ent}{ \float }{ 100*\frac{\displaystyle\sum_{i=0}^{\longitud{lista}-1} lista[i]}{lista[indice]} }    
     
 \end{enumerate}
+\newpage
 
+
+
+\begin{enumerate}
 
 \section{Implementación y demostraciones de correctitud}
+\item \textbf{hayBallotage}
+\begin{lstlisting}
+
+i := 0
+partido1 := 0
+partido2 := 0
+suma := 0
+k := 0
+
+while (i < escrutinio.size()) do
+
+    suma := suma + escrutinio[i]
+    i := i + 1
+    
+endwhile
+
+while ( k < escrutinio.size() - 1) do
+
+    if((escrutinio[k] * 100 / suma) > partido1) then
+        partido1 := escrutinio[k] * 100 / suma
+    else
+        if((escrutinio[k] * 100 / suma) > partido2) then
+            partido2 := escrutinio[k] * 100 / suma
+        else
+            skip
+        endif
+    endif
+    k := k + 1
+    
+endwhile
+
+if (partido1 > 45 || (partido1 > 40 && partido1 - partido2 > 10)) then
+    res := false
+else
+    res := true
+endif
+\end{lstlisting}
+\newpage
+
+\item \textbf{hayFraude:}
+\begin{proc}{Suma}{\In lista: \TLista{\ent}}{\ent}
+    \requiere{\True}
+    \asegura{result = \displaystyle\sum_{i=0}^{\longitud{lista}-1} lista[i]}
+\end{proc}
+\begin{lstlisting}[escapechar=ñ]
+    PROC Suma(in lista: ñ$\TLista{\ent}) : \ent$ñ
+    Aux i : ñ$\ent$ñ
+    Aux s : ñ$\ent$ñ
+    i := 0
+    s := 0
+    while (i < lista.size()) do
+        s := s + lista[i]
+        i := i + 1
+    endwhile
+    result := s
+    Return
+    
+    total_pres := Suma(escrutinio_presidencial)
+    total_dip := Suma(escrutinio_diputados)
+    total_sen := Suma(escrutinio_senadores)
+    res := total_pres = total_dip && total_dip = total_sen
+\end{lstlisting}
+
+Para facilitar la lectura y escritura, hacemos el reemplazo sintáctico de\\ ``escrutinio\_presidencial"\ por ``escr\_pres",\\ ``escrutinio\_diputados"\ por ``escr\_dip"\ y\\ ``escrutinio\_senadores"\ por ``escr\_sen"
+\vspace*{1em}
+
+$P \equiv \{($\newline
+$ \longitud{escr\_pres} \geq 2 \yLuego (\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{escr\_pres} \yLuego escr\_pres[i] \geq 0} \land$ \newline
+$\paraTodo[unalinea]{i, j}{\ent}{0 \leq i, j < \longitud{escr\_pres} - 1 \implicaLuego escr\_pres[i] \neq escr\_pres[j]}  $\newline ) $\land$ (
+
+$\longitud{escr\_dip} \geq 2 \yLuego (\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{escr\_dip} \yLuego escr\_dip[i] \geq 0} \land$ \newline
+$\paraTodo[unalinea]{i, j}{\ent}{0 \leq i, j < \longitud{escr\_dip} - 1 \implicaLuego escr\_dip[i] \neq escr\_dip[j]} $\newline ) $\land$ (
+
+$\longitud{escr\_sen} \geq 3 \yLuego (\paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{escr\_sen} \yLuego escr\_senl[i] \geq 0} \land$ \newline
+$\paraTodo[unalinea]{i, j}{\ent}{0 \leq i, j < \longitud{escr\_sen} - 1 \implicaLuego escr\_sen[i] \neq escr\_sen[j]}$\newline 
+$)\}$
+
+$Q \equiv \{ res = \True \iff 
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i] \}$
+\newline \newline \newline
+
+Necesitamos que $\{P\} \ S\ \{Q\}$. Como en el programa hay un llamado a procedimiento, primero vamos a demostrar su correctitud:
+$\{P_p\} \ S_p\ \{Q_p\}$, con $P_p \equiv \{\True\}$ y $Q_p \equiv \{result = \displaystyle\sum_{k=0}^{\longitud{lista}-1} lista[k]\}$
+
+Si probamos que
+\begin{itemize}
+    \item $P_p \implica wp(i := 0; s := 0, P_c)$
+    \item $P_c \implica  wp(ciclo, Q_c)$
+    \item $Q_c \implica wp(result := s, Q_p)$
+\end{itemize}
+Entonces probamos la tripla de Hoare de Suma como válida
+
+Empecemos con el ciclo:\\
+$P_c \equiv \{ i=0 \land s=0 \}$\\
+$Q_c \equiv \{ s= \displaystyle\sum_{k=0}^{\longitud{lista}-1} lista[k]\}$\\
+$I \equiv \{ 0 \leq i \leq \longitud{lista} \yLuego s = \displaystyle\sum_{k=0}^{i-1} lista[k] \}$\\
+$B \equiv \{ i < \longitud{lista} \}$\\
+$fv = \longitud{lista} - i$\\
+
+$\color{blue} P_c \implica I$
+
+$\{ i=0 \land s=0 \} \implica \{ 0 \leq i \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k] \}$ 
+
+Como $i=0$ entonces $i\geq0$, y luego $s = \sum_{k=0}^{-1} lista[k]$, que es una sumatoria con un rango vacío, por lo tanto es igual a 0, y se cumple pues $s=0$\\
+
+
+$\color{blue}\{I\land B\} S \{ I \}$
+
+Veo si $\{I\land B\} \implica wp(S, I)\\ \vspace*{10pt} 
+\equiv wp(s:= s + lista[i]; i := i+1, 0 \leq i \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k])\\ \vspace*{5pt}
+\equiv wp(s:=s+lista[i], wp(i:=i+1, 0 \leq i \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k])\\ \vspace*{5pt} 
+\equiv wp(s:=s+lista[i], def(i+1) \yLuego 0 \leq i+1 \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i+1-1} lista[k]\\ \vspace*{5pt} 
+\equiv wp(s:=s+lista[i], \True \yLuego -1 \leq i < \longitud{lista} \yLuego s = \sum_{k=0}^{i} lista[k]\\ \vspace*{5pt} 
+\equiv def(s+lista[i]) \yLuego -1 \leq i < \longitud{lista} \yLuego s + lista[i] = \sum_{k=0}^{i} lista[k]\\ \vspace*{5pt} 
+\equiv 0 \leq i < \longitud{lista} \yLuego -1 \leq i < \longitud{lista} \yLuego s = \sum_{k=0}^{i} (lista[k]) - lista[i]\\ \vspace*{5pt} 
+\equiv 0 \leq i < \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k]$
+
+$\{I\land B\} \equiv \{ 0 \leq i \leq \longitud{lista} \yLuego s = \displaystyle\sum_{k=0}^{i-1} lista[k] \land i < \longitud{lista}\} \equiv 
+\{ 0 \leq i < \longitud{lista} \yLuego s = \displaystyle\sum_{k=0}^{i-1} lista[k]\}$ y como p $\implica$ p es tautología, puedo verificar que \{$I\land B$\} S \{$ I $\}\\
+
+
+$\color{blue} I \land \neg B \implica Q_c$
+
+$\{I\land B\} \equiv \{ 0 \leq i \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k] \land i \geq \longitud{lista}\}\\ \vspace*{5pt}
+\equiv \{ i = \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k]\}\\ \vspace*{5pt}
+\equiv \{ i = \longitud{lista} \yLuego s = \sum_{k=0}^{\longitud{lista}-1} lista[k]\}\\ \vspace*{5pt}$
+Como  $q\land p \implica p$ es tautología, entonces puedo verificar que $I \land \neg B \implica Q_c$
+
+Luego, por el teorema del invariante, el ciclo es parcialmente correcto. Sabemos que si termina, es correcto respecto a su especificación. Ahora falta verificar que termine:\\
+
+$\color{blue} \{ I \land B \land fv = v_0 \} S \{ fv < v_0 \}$
+
+Veo si $\{I\land B \land fv = v_0\} \implica wp(S, fv < v_0)\\ \vspace*{5pt} 
+\equiv wp(s:= s + lista[i]; i := i+1, \longitud{lista} - i < v_0)\\ \vspace*{5pt}
+\equiv wp(s:= s + lista[i], wp(i := i+1, \longitud{lista} - i < v_0))\\ \vspace*{5pt}
+\equiv wp(s:= s + lista[i], def(i+1) \yLuego \longitud{lista} - (i+1) < v_0)\\ \vspace*{5pt}
+\equiv wp(s:= s + lista[i], \True \yLuego \longitud{lista} - i -1 < v_0)\\ \vspace*{5pt}
+\equiv def(s + lista[i]) \yLuego \longitud{lista} - i -1 < v_0\\ \vspace*{5pt}
+\equiv 0 \leq i < \longitud{lista} \yLuego \longitud{lista} - i -1 < v_0$
+
+$\{I\land B \land fv = v_0\} \equiv (0 \leq i \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k] \land i < \longitud{lista} \land fv = v_0)$
+
+\begin{itemize}
+    \item $0 \leq i < \longitud{lista}$ es verdadero pues $0 \leq i \leq \longitud{lista}$ lo implica
+    \item $\longitud{lista} - i -1 < v_0$ también lo es porque $fv = \longitud{lista} - 1 = v_0$, si se reemplaza en la desigualdad anterior queda $\longitud{lista} - i -1 < \longitud{lista} - i \iff -1<0$, que es verdadero
+\end{itemize}
+
+Por lo tanto, verifiqué que $\{ I \land B \land fv = v_0 \}$ S \{ $fv < v_0$ \}\\
+
+$\color{blue} I \land fv \leq 0 \implica \neg B$\vspace*{5pt} \\ \vspace*{5pt}
+$\equiv (0 \leq i \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k] \land \longitud{lista} - i \leq 0) \implica \neg (i < \longitud{lista})\\ \vspace*{5pt}
+\equiv (0 \leq i \leq \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k] \land \longitud{lista} \leq i) \implica i \geq \longitud{lista}\\ \vspace*{5pt}
+\equiv (i = \longitud{lista} \yLuego s = \sum_{k=0}^{i-1} lista[k]) \implica i \geq \longitud{lista}\\ \vspace*{5pt}$
+Lo que es verdadero pues  $i = \longitud{lista} \implica i \geq \longitud{lista}$. Entonces verifiqué que $I \land fv \leq 0 \implica \neg B$.
+
+Por el teorema de terminación de un ciclo, probamos que el ciclo termina. Y en conjunto a lo probado anteriormente, el ciclo es correcto respecto a la especificación y termina en una cantidad finita de pasos. Ahora, siguiendo con la correctitud del procedimiento Suma, necesitamos probar que
+\begin{itemize}
+    \item $P_p \implica wp(i := 0; s := 0, P_c)$
+    \item $Q_c \implica wp(result := s, Q_p)$
+\end{itemize}
+
+\begin{minipage}{0.3\textwidth}
+$\quad wp(i := 0; s := 0, P_c) \\
+\equiv wp(i := 0; s := 0, i=0 \land s=0)\\
+\equiv wp(i := 0, wp(s := 0, i=0 \land s=0)$
+\end{minipage}
+\hfill
+\begin{minipage}{0.6\textwidth}
+\begin{tabular}{|p{\textwidth}}
+$\equiv wp(i := 0, def(0) \yLuego i=0 \land 0=0)$\\
+$\equiv wp(i := 0, \True \yLuego i=0)$\\
+$\equiv def(0) \yLuego 0=0) \equiv \True$
+\end{tabular}
+\end{minipage}\\[5pt]
+
+$\quad \; wp(result := s, Q_p)\vspace*{5pt} \\ \vspace*{5pt}
+\equiv wp(result := s, result = \sum_{k=0}^{\longitud{lista}-1} lista[k])\\ \vspace*{5pt}
+\equiv def(s) \yLuego s = \sum_{k=0}^{\longitud{lista}-1} lista[k]\\ \vspace*{5pt}
+\equiv s = \sum_{k=0}^{\longitud{lista}-1} lista[k]$
+
+Como $P_p \equiv \{\True\}$ implica $\True$ y $Q_c \equiv \{s= \sum_{k=0}^{\longitud{lista}-1} lista[k]\}$ implica
+$s= \sum_{k=0}^{\longitud{lista}-1} lista[k]$, ambos pues $p \implica p$ es tautología, entonces probamos que la implementación de
+la especificación Suma es correcta. 
+
+Ahora, volviendo a la implementación de hayFraude, necesitamos probar que $\color{blue} P \implica ws(S, Q)$
+
+$\{\True\}$
+
+$\{(\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1}  escr\_sen[i]) = \True \iff \\
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$
+
+$\{\forall r.(r = \displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i]) \implica (r = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1}
+escr\_dip[i] \land \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1}) = \True \iff \\ 
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$
+\begin{lstlisting}[escapechar=ñ, numbers=none]
+    total_pres := Suma(escrutinio_presidencial)
+\end{lstlisting}
+$\{(total\_pres = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] =
+\displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1}) = \True \iff \\
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$
+
+%$result = true \iff esGanador(frente\_de\_izquierda)$
+
+$\{\forall r.(r = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i]) \implica (total\_pres = r \land r =
+\displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1}) = \True \iff \\
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$
+\begin{lstlisting}[escapechar=ñ, numbers=none]
+    total_dip := Suma(escrutinio_diputados)
+\end{lstlisting}
+$\{(total\_pres = total\_dip \land total\_dip = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1}) = \True \iff \\
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$
+
+$\{(\forall r.(r = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]) \implica total\_pres = total\_dip \land total\_dip = r) = \True \iff \\
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$
+\begin{lstlisting}[escapechar=ñ, numbers=none]
+    total_sen := Suma(escrutinio_senadores)
+\end{lstlisting}
+$\{(total\_pres = total\_dip \land total\_dip = total\_sen) = \True \iff \\
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$
+\begin{lstlisting}[escapechar=ñ, numbers=none]
+    res := total_pres = total_dip && total_dip = total_sen
+\end{lstlisting}
+$\{res = \True \iff 
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\}$\\[5pt]
+
+Como $\{(\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1}  escr\_sen[i]) = \True \iff \\
+\displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+\displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]\} \equiv \{\True\}$, entonces $P \implica ws(S, Q)$ y por lo tanto se cumple la tripla de Hoare $\{P\}\ S\ \{Q\}$, haciendo correcto este programa respecto a la especificación de hayFraude.
+
+% $S_1 = total\_pres := Suma(escr\_pres)$\\
+% $S_2 = total\_dip := Suma(escr\_dip)$\\
+% $S_3 = total\_sen := Suma(escrutinio\_sen)$\\
+% $S_4 = res := total\_pres = total\_dip$ \&\& $total\_dip = total\_sen$
+
+% $\quad wp(S, Q) \\ \vspace*{5pt}
+% \equiv wp(S_1;S_2;S_3;S_4, res = \True \iff 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i])\\ \vspace*{5pt}
+% \
+% \equiv wp(S_1,wp(S_2,wp(S_3,wp(S_4, res = \True \iff 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i])))\\ \vspace*{5pt}
+% \
+% \equiv wp(S_1,wp(S_2,wp(S_3,def(total\_pres = total\_dip$ \&\& $total\_dip = total\_sen) \yLuego total\_pres = total\_dip \land total\_dip = total\_sen = \True \iff 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]))\\ \vspace*{5pt}
+% \
+% \equiv wp(S_1,wp(S_2,wp(S_3,\True \yLuego total\_pres = total\_dip \land total\_dip = total\_sen = \True \iff 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i]))\\ \vspace*{5pt}
+% \
+% \equiv wp(S_1,wp(S_2,def(Suma(escrutinio\_sen)) \yLuego total\_pres = total\_dip \land total\_dip = total\_sen = \True \iff 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_pres}-1} escr\_pres[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] \land 
+% \displaystyle\sum_{i=0}^{\longitud{escr\_dip}-1} escr\_dip[i] = \displaystyle\sum_{i=0}^{\longitud{escr\_sen}-1} escr\_sen[i])\\ \vspace*{5pt}
+% $
+\newpage
+
+\item \textbf{obtenerSenadores:}
+\begin{lstlisting}
+    i := 2
+    if(s[0] > s[1]) then
+        primero := 0
+        segundo := 1
+    else
+        primero := 1
+        segundo := 0
+    endif
+
+    while (i < s.size() - 1) do
+        if (s[i] > s[segundo])
+            if (s[i] > s[primero])
+                segundo := primero
+                primero := i
+            else
+                segundo := i
+        else
+            skip
+        i := i + 1
+    endwhile
+    res_0 := primero
+    res_1 := segundo
+\end{lstlisting}
+
+\textbf{Demostracion de correctitud, ejercicio 3}
+\vspace{0.3cm}
+\\
+\textbf{Planteo de Pc, Qc, B, I y fv}
+\begin{itemize}
+\item $Pc = \{i = 2 \land ((primero = 0 \land segundo = 1) \lor (primero = 1 \land segundo = 0))\}$
+\item $Qc = \{i= \vert s \vert -1 \land esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\}$
+\item $B = i < \vert s \vert -1$
+\item $I = \{ 2\leq i \leq|s|-1 \yLuego esElPrimerPartido(subseq(s, 0, i+1), primero) \land esElSegundoPartido(subseq(s, 0, i+1), segundo)\}$
+\item fv = $\{(\vert s \vert -1) - i\}$
+\end{itemize}
+\textbf{Primera Parte, Pre \implica wp(codigo previo al ciclo, Pc)}
+\begin{itemize}
+\item $Pre = \{condicionesBasicas(s, 2)\}$
+\item $Pc = \{i = 2 \land ((primero = 0 \land segundo = 1) \lor (primero = 1 \land segundo = 0))\}$
+\end{itemize}
+\vspace{0.3cm}
+Wp(codigo pre ciclo, Pc) $\equiv$ Wp(i:= 2, Wp(If...endif, Pc)
+\vspace{0.3cm}
+\\
+Llamo E1 a Wp(If...endif, Pc)
+\vspace{0.3cm}
+\\
+Llamo E2 a Wp(i:=2, E1)
+\vspace{0.3cm}
+\\
+\underline{\textbf{E1}}
+\vspace{0.3cm}
+\\
+$Wp(If...endif, Pc) \equiv def(s[0] > s[1]) \yLuego ((s[0] > s[1] \land Wp(primero:= 0, Wp(segundo:= 1, Pc))) \lor (s[0] \leq s[1] \land Wp(primero:= 1, Wp(segundo:= 0, Pc))))\equiv$
+\vspace{0.3cm}
+\\
+$|s| > 1 \yLuego ((s[0] > s[1] \land Wp(primero:= 0, Wp(segundo:= 1, Pc))) \lor (s[0] \leq s[1] \land Wp(primero:= 1, Wp(segundo:= 0, Pc))))$
+\vspace{0.3cm}
+\\
+Lo resuelvo por partes y despues lo junto
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land Wp(primero:= 0, Wp(segundo:= 1, Pc))) \equiv$
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land Wp(primero:= 0, def(1) \yLuego \{i = 2 \land ((primero = 0 \land 1 = 1) \lor (primero = 1 \land 1 = 0))\})) \equiv$
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land Wp(primero:= 0, True \yLuego \{i = 2 \land ((primero = 0 \land True) \lor (primero = 1 \land False))\})) \equiv$
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land Wp(primero:= 0, \{i = 2 \land (primero = 0) \lor False\})) \equiv$
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land def(0) \yLuego \{i = 2 \land (0 = 0) \lor False\}) \equiv$
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land True \yLuego \{i = 2 \land (True) \lor False\}) \equiv$
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land\{i = 2 \land True\}) \equiv$
+\vspace{0.3cm}
+\\
+$(s[0] > s[1] \land\ i = 2)$
+\vspace{0.3cm}
+\\
+Por ahora tengo:
+\vspace{0.3cm}
+\\
+$|s| > 1 \yLuego ((s[0] > s[1] \land i = 2) \lor (s[0] \leq s[1] \land Wp(primero:= 1, Wp(segundo:= 0, Pc))))$
+\vspace{0.3cm}
+\\
+Voy con la segunda parte:
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land Wp(primero:= 1, Wp(segundo:= 0, Pc)))\equiv$
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land Wp(primero:= 1, def(0) \yLuego \{i = 2 \land ((primero = 0 \land 0 = 1) \lor (primero = 1 \land 0 = 0))\}))\equiv$
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land Wp(primero:= 1, True \yLuego \{i = 2 \land ((primero = 0 \land False) \lor (primero = 1 \land True))\}))\equiv$
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land Wp(primero:= 1, \{i = 2 \land (False \lor (primero = 1))\}))\equiv$
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land def(1) \yLuego\{i = 2 \land (False \lor (1 = 1))\})\equiv$
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land def(1) \yLuego\{i = 2 \land (False \lor True)\})\equiv$
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land True \yLuego\{i = 2 \land True\})\equiv$
+\vspace{0.3cm}
+\\
+$(s[0] \leq s[1] \land i = 2 )$
+\vspace{0.3cm}
+\\
+Ahora tengo
+\vspace{0.3cm}
+\\
+$|s| > 1 \yLuego ((s[0] > s[1] \land i = 2) \lor (s[0] \leq s[1] \land i = 2)) \equiv \textbf{E1}$
+\vspace{0.3cm}
+\\
+Ahora Resuelvo \textbf{E2}
+\vspace{0.3cm}
+\\
+$E2 \equiv Wp(i:= 2, E1) \equiv def(2) \yLuego |s| > 1 \yLuego ((s[0] > s[1] \land 2 = 2) \lor (s[0] \leq s[1] \land 2 = 2)) \equiv$
+\vspace{0.3cm}
+\\
+$True \yLuego |s| > 1 \yLuego ((s[0] > s[1] \land True) \lor (s[0] \leq s[1] \land True)) \equiv$
+\vspace{0.3cm}
+\\
+$|s| > 1 \yLuego ((s[0] > s[1]) \lor (s[0] \leq s[1] )) \equiv \textbf{E2}$
+\vspace{0.3cm}
+\\
+Ahora, me queda ver si la Pre \implica $|s| > 1 \yLuego ((s[0] > s[1]) \lor (s[0] \leq s[1] ))$
+\begin{itemize}
+\item$|s| > 1$ se cumple, ya que la Pre establece que $|s| > 2$, entonces $|s| > 2 \implica |s| > 1$
+
+\item Despues, la segunda parte$((s[0] > s[1]) \lor (s[0] \leq s[1] ))$ siempre se va a cumplir, ya que siempre uno de los 2 casos va a ser verdadero, y entonces quedaria $True \lor False \equiv True$ o $False \lor True$ $\equiv True$
+\end{itemize}
+Entonces, queda probado que Pre \implica Wp(codigo previo al ciclo, Pc)
+\vspace{0.3cm}
+\\
+\textbf{Segunda Parte, Qc \implica wp(codigo posterior al ciclo, Post)}
+\vspace{0.3cm}
+\\
+$Qc = \{i= \vert s \vert -1 \land esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\}$
+\vspace{0.3cm}
+\\
+$Post = esElPrimerPartido(s, res_0) \land esElSegundoPartidoPartido(s, res_1)$ 
+\vspace{0.3cm}
+\\
+Wp(codigo post ciclo, Post) $\equiv$ Wp($res_0:= primero$, Wp($res_1:= segundo$, Post))
+\vspace{0.3cm}
+\\
+Llamo E3 a Wp($res_1:= segundo$, Post)
+\vspace{0.3cm}
+\\
+Llamo E4 a Wp($res_0:= primero$, E3)
+\vspace{0.3cm}
+\\
+\underline{\textbf{E3}}
+\vspace{0.3cm}
+\\
+Wp($res_1:= segundo$, Post)$\equiv$
+\vspace{0.3cm}
+\\
+$def(segundo) \yLuego esElPrimerPartido(s, res_0) \land esElSegundoPartido(s, segundo) \equiv$
+\vspace{0.3cm}
+\\
+$True \yLuego esElPrimerPartido(s, res_0) \land esElSegundoPartido(s, segundo) \equiv$
+\vspace{0.3cm}
+\\
+$esElPrimerPartido(s, res_0) \land esElSegundoPartido(s, segundo) \equiv \textbf{E3}$
+\vspace{0.3cm}
+\\
+\textbf{E4}
+\vspace{0.3cm}
+\\
+Wp($res_0:= primero$, E3)$\equiv$
+\vspace{0.3cm}
+\\
+$def(primero) \yLuego esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\equiv$
+\vspace{0.3cm}
+\\
+$True \yLuego esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\equiv$
+\vspace{0.3cm}
+\\
+$esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\equiv \textbf{E4}$
+\vspace{0.3cm}
+\\
+Ahora, tengo que ver si Qc \implica E4
+\vspace{0.3cm}
+\\
+$\{i= \vert s \vert -1 \land esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\} \implica$
+\vspace{0.3cm}
+\\
+$esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)$
+\vspace{0.3cm}
+\\
+Llamo P a $\{i = \vert s \vert -1\}$ 
+\vspace{0.3cm}
+\\
+Llamo Q a $\{esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\}$
+\vspace{0.3cm}
+\\
+Entonces, $P \land Q \implica Q$ es verdadero y queda probado que $\textbf{Qc} \implica$ \textbf{Wp} (codigo post ciclo, \textbf{Post})
+\vspace{0.3cm}
+\\
+\textbf{Tercera Parte, Pc \implica wp(ciclo, Qc) (con teorema del invariante)}
+\vspace{0.3cm}
+\\
+Para probar la correcion de un ciclo tengo que:
+\begin{itemize}
+    \item $Pc \implica I$
+    \item $\{I\land B\}\hspace{0.1cm}S\hspace{0.1cm}\{I\}$
+    \item $I \land \neg B \implica Qc$
+    \item $\{I\land B\land v_0=fv\}\hspace{0.1cm}S\hspace{0.1cm}\{fv<v_0\}$
+    \item $I \land fv\leq0 \implica \neg B$
+\end{itemize}
+\underline{\textbf{Pc \implica I}}
+\vspace{0.3cm}
+\\
+$Pc = \{i = 2 \land ((primero = 0 \land segundo = 1) \lor (primero = 1 \land segundo = 0))\}$
+\vspace{0.3cm}
+\\
+$I = \{ 2\leq i \leq|s|-1 \yLuego esElPrimerPartido(subseq(s, 0, i+1), primero) \land esElSegundoPartido(subseq(s, 0, i+1), segundo)\}$
+\vspace{0.3cm}
+\\
+Asumo que el antecedente es verdadero y trato de llegar al consecuente
+\vspace{0.3cm}
+\\
+\begin{itemize}
+    \item $i = 2 \implica 2\leq 2\leq |s|-1$ Se cumple
+    \item $(primero = 0 \land segundo = 1) \lor (primero = 1 \land segundo = 0)\implica esElPrimerPartido(subseq(s, 0, 3), primero) \land esElSegundoPartido(subseq(s, 0, 3), segundo)$
+\end{itemize}
+Llamo $s_0$ a la subseq(s,0,2). $s_0$ es la subsecuencia que unicamente toma las posiciones 0, 1 y 2 de la secuencia original s.
+\\
+Entonces
+\vspace{0.3cm}
+\\
+$(primero = 0 \land segundo = 1) \lor (primero = 1 \land segundo = 0)\implica 
+\\
+esElPrimerPartido(s_0, primero) \land esElSegundoPartido(s_0, segundo)$
+\vspace{0.3cm}
+\\
+Por $(primero = 0 \land segundo = 1) \lor (primero = 1 \land segundo = 0)$ se que alguna de esas opciones va a ser verdadera, y en cualquier opcion de esas $primero > segundo$ siempre va a pasar. Tambien, se que la posicion 2 (los votos en blanco) no va a ser tenia en cuenta por los predicados esElPrimerPartido y esElSegundoPartido.
+\vspace{0.3cm}
+\\
+Entonces, $esElPrimeroPartido(s_0, primero) \land esElSegundoPartido(s_0, segundo)$ siempre se va a cumplir.
+\vspace{0.3cm}
+\\
+Conclusion, $(primero = 0 \land segundo = 1) \lor (primero = 1 \land segundo = 0)\implica esElPrimerPartido(subseq(s, 0, 3), primero) \land esElSegundoPartido(subseq(s, 0, 3), segundo)$ tambien se cumple, y queda probado que $\textbf{Pc} \implica \textbf{I}$
+\vspace{0.3cm}
+\\
+\underline{\textbf{$I \land \neg B \implica Qc$}}
+\vspace{0.3cm}
+\\
+$I = \{ 2\leq i \leq|s|-1 \yLuego esElPrimerPartido(subseq(s, 0, i+1), primero) \land esElSegundoPartido(subseq(s, 0, i+1), segundo)\}$
+\vspace{0.3cm}
+\\
+$\neg B = i \geq |s|- 1$
+\vspace{0.3cm}
+\\
+$Qc = \{i= \vert s \vert -1 \land esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\}$
+\vspace{0.3cm}
+\\
+Asumo que el antecedente es verdadero y trato de llegar al consecuente
+\vspace{0.3cm}
+\\
+Por I y B se que $2 \leq i \leq |s|-1 \land i\geq |s|- 1 \implica i = |s|-1$
+\vspace{0.3cm}
+\\
+Entonces, $\{|s|-1 = |s|-1 \land esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\}\equiv$
+\vspace{0.3cm}
+\\
+$\{esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)\}$
+\vspace{0.3cm}
+\\
+Me queda probar que:
+\vspace{0.3cm}
+\\
+$esElPrimerPartido(subseq(s, 0, |s|-1+1), primero) \land esElSegundoPartido(subseq(s, 0, |s|-1+1), segundo) \implica
+\vspace{0.3cm}
+\\
+esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)$
+\vspace{0.3cm}
+\\
+$subseq(s, 0, |s|-1+1) \equiv subseq(s, 0, |s|)$ y esto establece la secuencia $s_2$ desde la posicion 0 de la secuencia s original hasta la posicion $|s|-1$ inclusive (osea, todas las posiciones de la secuencia s original).
+\vspace{0.3cm}
+\\
+Entonces, $s_2\equiv s$, y se cumple que:
+\vspace{0.3cm}
+\\
+$esElPrimerPartido(subseq(s, 0, |s|-1+1), primero) \land esElSegundoPartido(subseq(s, 0, |s|-1+1), segundo) \implica
+\vspace{0.3cm}
+\\
+esElPrimerPartido(s, primero) \land esElSegundoPartido(s, segundo)$
+\vspace{0.3cm}
+\\
+\underline{$I\land fv \leq 0 \implica \neg B$}
+\vspace{0.3cm}
+\\
+$I = \{ 2\leq i \leq|s|-1 \yLuego esElPrimerPartido(subseq(s, 0, i+1), primero) \land esElSegundoPartido(subseq(s, 0, i+1), segundo)\}$
+\vspace{0.3cm}
+\\
+$fv = |s|- 1 -i$
+\vspace{0.3cm}
+\\
+$\neg B = i \geq |s| - 1$
+\vspace{0.3cm}
+\\
+Asumo que el antecedente es verdadero y trato de llegar al consecuente.
+\vspace{0.3cm}
+\\
+$I \land fv \leq 0 \equiv$
+\vspace{0.3cm}
+\\
+$I \land |s|-1-i \leq 0 \equiv$
+\vspace{0.3cm}
+\\
+$I \land |s|-1 \leq i \equiv \neg B$
+\vspace{0.3cm}
+\\
+\underline{$\{I\land B \land v_0 = fv\} S \{fv < v_0\}$}
+\vspace{0.3cm}
+\\
+$I\land B \land v_0 = |s| - 1 - i \implica Wp(If...endif, Wp(i:= i+1, |s|-1 - i < v_0))$ 
+\vspace{0.3cm}
+\\
+$I\land B \land v_0 = |s| - 1 - i \implica Wp(If...endif, def(i+1)\yLuego |s| -1 -i - 1 < v_0)\equiv$
+\vspace{0.3cm}
+\\
+$I\land B \land v_0 = |s| - 1 - i \implica Wp(If...endif, True\yLuego |s| -1 -i < v_0 + 1)$ 
+\vspace{0.3cm}
+\\
+$I\land B \land v_0 = |s| - 1 - i \implica Wp(If...endif,|s| -1 -i < v_0 + 1)$ 
+\vspace{0.3cm}
+\\
+La wp(If...endif) no me cambia , la expresion, ya que no hay ningun reemplazo de variables. Entonces:
+\vspace{0.3cm}
+\\
+$I\land B \land v_0 = |s| - 1 - i \implica |s| -1 -i < v_0 + 1$
+\vspace{0.3cm}
+\\
+Es verdadero, ya que $v_0 < v_0 + 1 $ siempre
+\vspace{0.3cm}
+\\
+\underline{$\{I\land B\}\hspace{0.1cm}S\hspace{0.1cm}\{I\}$}
+\vspace{0.3cm}
+\\
+$I = \{ 2\leq i \leq|s|-1 \yLuego esElPrimerPartido(subseq(s, 0, i+1), primero) \land esElSegundoPartido(subseq(s, 0, i+1), segundo)\}$
+\vspace{0.3cm}
+\\
+$B = i < |s|-1$
+\vspace{0.3cm}
+\\
+Tengo que probar que $I\land B \implica Wp(If...endif; i:= i+1, I)$
+\vspace{0.3cm}
+\\
+$Wp(If...endif; i:= i+1, I)\equiv$
+\vspace{0.3cm}
+\\
+$Wp(If...endif; Wp(i:= i+1, I))$
+\vspace{0.3cm}
+\\
+Llamo \textbf{E1} a $Wp(i:=i+1, I)$ y arranco $Wp(i:=i+1, I)\equiv$
+$def(i+1)\yLuego 2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(subseq(s,0, i+2), primero) \land esElSegundoPartido(subseq(s,0, i+2), segundo)\equiv$
+\vspace{0.3cm}
+\\
+Llamo $s_3 a subseq(s, 0, i+2)$
+\vspace{0.3cm}
+\\
+$True\yLuego 2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, segundo)\equiv$
+\vspace{0.3cm}
+\\
+$2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, segundo)\equiv$\textbf{E1}
+\vspace{0.3cm}
+\\
+$Wp(If...endif, \textbf{E1})\equiv$
+\vspace{0.3cm}
+\\
+$def(s[i]>s[segundo]) \yLuego (s[i]>s[segundo] \land Wp(If...endif, E1)\lor (s[i]\leq s[segundo] \land Wp(Skip, E1)))\equiv$
+\vspace{0.3cm}
+\\
+$True \yLuego (s[i]>s[segundo] \land Wp(If...endif, E1)\lor (s[i]\leq s[segundo] \land Wp(Skip, E1)))\equiv$
+\vspace{0.3cm}
+\\
+$(s[i]>s[segundo] \land Wp(If...endif, E1)\lor (s[i]\leq s[segundo] \land Wp(Skip, E1)))$
+\vspace{0.3cm}
+\\
+Entro en Wp(If...endif, E1) que es la mas larga
+\vspace{0.3cm}
+\\
+$Wp(If...endif, E1)\equiv$
+\vspace{0.3cm}
+\\
+$def(s[i] > s[primero])\yLuego (s[i] > s[primero] \land Wp(segundo:=primero, Wp(primero:=i, E1) \lor (s[i] \leq s[primero]) \land Wp(segundo:= i, E1)))\equiv$
+\vspace{0.3cm}
+\\
+$True\yLuego (s[i] > s[primero] \land Wp(segundo:=primero, Wp(primero:=i, E1) \lor (s[i] \leq s[primero]) \land Wp(segundo:= i, E1)))\equiv$
+\vspace{0.3cm}
+\\
+$(s[i] > s[primero] \land Wp(segundo:=primero, Wp(primero:=i, E1) \lor (s[i] \leq s[primero]) \land Wp(segundo:= i, E1)))$
+\vspace{0.3cm}
+\\
+Entro en $Wp(segundo:=primero, Wp(primero:= i, E1))$
+\vspace{0.3cm}
+\\
+$Wp(segundo:=primero, Wp(primero:= i, E1))\equiv$
+\vspace{0.3cm}
+\\
+$Wp(segundo:=primero, def(i) \yLuego (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i)) \land
+\\
+esElSegundoPartido(s_3, segundo))\equiv$
+\vspace{0.3cm}
+\\
+$Wp(segundo:=primero, True \yLuego (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i)) \land
+\\
+esElSegundoPartido(s_3, segundo))\equiv$
+\vspace{0.3cm}
+\\
+$Wp(segundo:=primero,(2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i)) \land
+\\
+esElSegundoPartido(s_3, segundo))\equiv$
+\vspace{0.3cm}
+\\
+$def(primero) \yLuego ,(2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i) \land
+\\
+esElSegundoPartido(s_3, primero))\equiv$
+\vspace{0.3cm}
+\\
+$True \yLuego ,(2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i) \land
+\\
+esElSegundoPartido(s_3, primero))\equiv$
+\vspace{0.3cm}
+\\
+$(2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i) \land
+\\
+esElSegundoPartido(s_3, primero))\equiv$
+\vspace{0.3cm}
+\\
+Ahora, me meto con $(Wp(segundo:= i, E1))$
+\vspace{0.3cm}
+\\
+$(Wp(segundo:= i, E1))\equiv$
+\vspace{0.3cm}
+\\
+$def(i)\yLuego 2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3,i),\equiv$
+\vspace{0.3cm}
+\\
+$True\yLuego 2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, i)\equiv$
+\vspace{0.3cm}
+\\
+$2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, i)$
+\vspace{0.3cm}
+\\
+Ahora, tenemos que:
+\vspace{0.3cm}
+\\
+$(s[i] > s[primero] \land Wp(segundo:=primero, Wp(primero:=i, E1) \lor (s[i] \leq s[primero]) \land Wp(segundo:= i, E1)))\equiv$
+\vspace{0.3cm}
+\\
+$(s[i] > s[primero] \land (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i) \land
+esElSegundoPartido(s_3, primero))) \lor
+\\
+(s[i] \leq s[primero] \land (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, i))) $
+\vspace{0.3cm}
+\\
+Por ultimo, si lo enchufamos en la expresion original, tenemos que:
+\vspace{0.3cm}
+\\
+$(s[i]>s[segundo] \land Wp(If...endif, E1)\lor (s[i]\leq s[segundo] \land Wp(Skip, E1)))\equiv$
+\vspace{0.3cm}
+\\
+$(s[i]>s[segundo] \land (s[i] > s[primero] \land (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i) \land
+esElSegundoPartido(s_3, primero)))) \lor
+\\
+(s[i] \leq s[primero] \land (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, i)))
+\\
+\lor (s[i]\leq s[segundo] \land Wp(Skip, E1))\equiv$
+\vspace{0.3cm}
+\\
+$s[i]>s[segundo] \land (s[i] > s[primero] \land (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, i) \land
+esElSegundoPartido(s_3, primero)))\lor
+\\
+(s[i] \leq s[primero] \land (2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, i)))
+\\
+\lor (s[i]\leq s[segundo] \land 2\leq i+1 \leq |s|-1 \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, segundo))$
+\vspace{0.3cm}
+\\
+Ahora, tengo que ver si $I \land B \implica$ toda esta expresion. Asumo que el antecendente es verdadero y trato de llegar al consecuente.
+\vspace{0.3cm}
+\\
+Saco el $2\leq i + 1 \leq |s| - 1$ para afuera
+\vspace{0.3cm}
+\\
+$2\leq i + 1 \leq |s| - 1 \land (s[i]>s[segundo] \land (s[i] > s[primero] \yLuego 
+esElPrimerPartido(s_3, i) \land
+esElSegundoPartido(s_3, primero))) \lor
+\\
+(s[i] \leq s[primero] \yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, i))
+\\
+\lor (s[i]\leq s[segundo]\yLuego 
+esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, segundo))$
+\begin{itemize}
+    \item Por $I \land B$ se que 2 $\leq i \leq |s|-1 \land i < |s| - 1$, entonces $2 \leq i+1 \leq |s| - 1$ se cumple.
+    \item A su vez, dado que $i < |s| - 1$, la expresion $s_3 = subseq(s, 0, i + 2)$ siempre va a estar definida, ya que i llegara a ser $|s| - 2$.
+\end{itemize}
+Entonces, al ser una disyuncion, siempre se va a cumplir uno de los casos principales $(s[i] > s[segundo]) \lor s[i] \leq s[segundo]$, y en cualquiera de esos casos los predicados $esElPrimerPartido(s_3, primero) \land esElSegundoPartido(s_3, segundo)$ se van a cumplir.
+\vspace{0.3cm}
+\\
+Finalmente, al probar la \textbf{Primera Parte, la Segunda Parte y la Tercera parte}, por corolario de monotonia, sabemos que $Pre \implica$ wp(programa completo, Post)
+
+\newpage
+
+
+\addtocounter{enumi}{2}
+\item \textbf{validarListasDiputadosEnProvincia:}
+\begin{lstlisting}
+res := True
+partido := 0
+while (partido < listas.size()) do
+    if (listas[partido].size() != cant_bancas) then
+        res := False
+    else
+        i := 0
+        while (i < listas[partido].size() - 1) do
+            if (listas[partido][i][1] = listas[partido][i+1][1]) then
+                res := False
+            else 
+                skip
+            endif
+            i := i + 1
+        endwhile
+    endif
+    partido := partido + 1
+endwhile
+return res
+\end{lstlisting}
+\end{enumerate}
 
 \end{document}
