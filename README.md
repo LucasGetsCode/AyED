@@ -1,1 +1,1 @@
-# AyED
+# Guías, talleres y TPs de la materia Algoritmos y Estructuras de Datos, ex algo-2, segundo cuatrimestre 2023
