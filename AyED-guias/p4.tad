@@ -1,0 +1,34 @@
+TAD PilaDict
+    obs elems: dict(indice: int, dato: T)
+
+    proc crearPila(): PilaDict
+        requiere {true}
+        asegura {res.elems = {}}
+
+    proc longitud(in p: PilaDict): ℤ
+        requiere {true}
+        asegura {((∀i : ℤ)(¬i in p.elems) ⇒ res = 0) ∨ (res in p.elems ∧ (∀i : ℤ)(i in p.elems ⇒ res ≥ i))} 
+
+    proc agregar(inout p: PilaDict, in e: T):
+        requiere {p = old(p)}
+        asegura {(∀i : ℤ)(i in old(p).elems ⇒ p.elems[i] = old(p).elems[i]) ∧ p.elems[longitud(old(p))+1] = e}
+    
+Fin TAD
+
+TAD NombreTaD
+    Igualdad Observacional:();
+    Géneros: nombreTad
+    Exporta: nombreTad, observadores, generadores,
+    Usa: Bool, Nat
+
+    Observadores Básicos:
+    obs?:    nombreTad t × nat n    ⟶ bool  \{ n ≥ 1 }
+    Generadores:
+    nil:            ⟶ nombreTad
+    Otras Operaciones:
+    otra:    nombreTad t × nat n    ⟶ bool  \{ n ≥ 1 }
+    Axiomas:
+    obs?(nil) = true
+    otra(t, n) = n
+    ...
+Fin TAD

@@ -1,0 +1,104 @@
+\documentclass[10pt,a4paper]{article}
+
+\input{AEDmacros}
+\usepackage{caratula} % Version modificada para usar las macros de algo1 de ~> https://github.com/bcardiff/dc-tex
+
+
+\titulo{Trabajo Práctico 1: Especificación y WP}
+\subtitulo{Elecciones Nacionales}
+
+\fecha{\today}
+
+\materia{Algoritmos y Estructuras de Datos}
+\grupo{Grupo.java}
+
+\integrante{Apellido, Nombre1}{001/01}{email1@dominio.com}
+\integrante{Apellido, Nombre2}{002/01}{email2@dominio.com}
+\integrante{Apellido, Nombre3}{003/01}{email3@dominio.com}
+\integrante{Apellido, Nombre4}{004/01}{email4@dominio.com}
+% Pongan cuantos integrantes quieran
+
+% Declaramos donde van a estar las figuras
+% No es obligatorio, pero suele ser comodo
+\graphicspath{{../static/}}
+
+\begin{document}
+
+\maketitle
+
+\section{Especificación}
+\begin{enumerate}
+    \item \textbf{hayBallotage}: verifica si hay ballotage en la elección presidencial.
+    \begin{proc}{hayBallotage}{\In escrutinio: \TLista{\ent}}{\bool}
+	%    \modifica{parametro1, parametro2,..}
+	\requiere{condicionesBasicas(escrutinio, 1)}
+	\asegura{\res = \neg (tieneMas45\%(escrutinio) \lor tieneMas40\%Diferencia10\%(escrutinio))}
+ 
+    \pred{tieneMas45\%}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i}{\ent}{0 \leq i< \longitud{escrutinio}-1 \yLuego escrutinio[i]\neq 0 \yLuego porcentaje(escrutinio, i) > 45}}
+    
+    \pred{tieneMas40\%Diferencia10\%}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i}{\ent}{0 \leq i< \longitud{escrutinio}-1\yLuego escrutinio[i]\neq 0 \yLuego (porcentaje(escrutinio, i) > 40 \land \\ \existe[unalinea]{j}{\ent}{(0 \leq j < \longitud{escrutinio} - 1 \yLuego escrutinio[j] \neq 0 \land j \neq i) \yLuego \\ porcentaje(escrutinio, i) - porcentaje(escrutinio, j) > 10})}}
+\end{proc}
+
+    \item \textbf{hayFraude}: verifica que los votos válidos de los tres tipos de cargos electivos sumen lo mismo.
+    \begin{proc}{hayFraude}{\In escrutinio\_presidencial: \TLista{\ent}, \In escrutinio\_senadores: \TLista{\ent}, \In escrutinio\_diputados: \TLista{\ent}}{\bool}
+	%    \modifica{parametro1, parametro2,..}
+	\requiere{condicionesBasicas(escrutinio\_presidencial,1)\yLuego \\condicionesBasicas(escrutinio\_senadores,2) \yLuego \\ condicionesBasicas(escrutinio\_diputados,1)}
+	\asegura{expresionBooleana2}
+\end{proc}
+
+    \item \textbf{obtenerSenadoresEnProvincia}: obtiene los id de los partidos (primero y segundo) para la elección de senadores en una provincia. El id es el índice de las listas escrutinios.
+    \begin{proc}{obtenerSenadoresEnProvincia}{\In escrutinio: \TLista{\ent}}{$\ent \times \ent$}
+	%    \modifica{parametro1, parametro2,..}
+	\requiere{expresionBooleana1}
+	\asegura{expresionBooleana2}
+\end{proc}
+ 
+    \item \textbf{calcularDHondtEnProvincia}: calcula los cocientes según el método d’Hondt para diputados en una provincia (importante: no es necesario ordenar los partidos por cantidad de votos)
+    \begin{proc}{calcularDHondtEnProvincia}{\In cant\_bancas: \ent, \In escrutinio: \TLista{\ent}}{\TLista{\TLista{\ent}}}
+	%    \modifica{parametro1, parametro2,..}
+	\requiere{condicionesBasicas(escrutinio, 1) \yLuego superanUmbralElectoral(escrutinio, 1) \land cant\_bancas > 0}
+	\asegura{\longitud{res}=\longitud{escrutinio}-1 \yLuego \paraTodo{i, j}{\ent}{0 \leq i < \longitud{res} \implicaLuego \longitud{res[i]}=cant\_bancas \yLuego \\ 0 \leq j < \longitud{res[i]} \implicaLuego res[i][j] = \lfloor \frac{escrutinio[i]}{1+j} \rfloor}}
+\end{proc}
+
+    \item \textbf{obtenerDiputadosEnProvincia}: calcula la cantidad de bancas de diputados obtenidas por cada partido en una provincia
+    \begin{proc}{obtenerDiputadosEnProvincia}{\In cant\_bancas: \ent, \In dHondt: \TLista{\TLista{\ent}}}{\TLista{\ent}}
+	%    \modifica{parametro1, parametro2,..}
+	\requiere{esMatriz(dHondt) \yLuego (estaOrdenado(dHondt) \land cocientesPositivos(dHondt) \land \\ noExistenCocientesRepetidos(dHondt) \land 0 < cant\_bancas \leq \longitud{dHondt[0]} )}
+	\asegura{\longitud{res} = \longitud{dHondt} \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud{res} \implicaLuego 0 \leq res[i] \leq cant\_bancas} \land \\ \displaystyle\sum_{i=0}^{\longitud{res}-1} res[i] = cant\_bancas \land distribucionBancasCocientes(cant\_bancas, dHondt)}
+ 
+    \pred{esDHondtValido}{\In dH: \TLista{\TLista{\ent}}}{esMatriz(dH) \yLuego (estaOrdenado(dH) \land cocientesPositivos(dH))}
+
+    \pred{esMatriz}{\In matriz: \TLista{\TLista{\ent}}}{\longitud{matriz} > 0 \yLuego \longitud{matriz[0]} > 0 \yLuego (\paraTodo[unalinea]{l}{\ent}{0 < l < \longitud{matriz} \implicaLuego \longitud{matriz[l]} = \longitud{matriz[l-1]}} }
+
+    \pred{estaOrdenado}{\In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i, j}{\ent}{0 \leq i < \longitud{dH} \land 0 \leq j < \longitud{dH[0]} \implicaLuego \\ (dH[i][0] \geq dH[i][j] * (j+1) \land dH[i][0] < (dH[i][j]+1) * (j+1)))}}
+
+    \pred{cocientesPositivos}{\In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i, j}{\ent}{0 \leq i < \longitud{dH} \land 0 \leq j < \longitud{dH[0]} \implicaLuego dH[i][j] \geq 0}}
+    
+    \pred{noExistenCocientesRepetidos}{\In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j,i',j'}{\ent}{0\leq i,i' < \longitud{dH} \land 0 \leq j,j' < \longitud{dH[0]} \land (i = i' \implica j \neq j') \implicaLuego dH[i][j] \neq dH[i'][j']}}
+    
+    \pred{distribucionBancasCocientes}{\In cant\_bancas: \ent, \In dH: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0\leq i < \longitud{res} \implicaLuego (\displaystyle\sum_{part=0}^{\longitud{dH}-1} (\displaystyle\sum_{coc=0}^{\longitud{dH[0]}-1} \IfThenElse{dH[part][coc] > dH[i][res[i]]}{1}{0})) \geq cant\_bancas}}
+\end{proc}
+
+    \item \textbf{validarListasDiputadosEnProvincia}: verifica que la listas de diputados de cada partido en una provincia contenga exactamente la misma cantidad de candidatos que bancas en disputa en esa provincia, y que además se cumpla la alternancia de géneros.
+    \begin{proc}{validarListasDiputadosEnProvincia}{\In cant\_bancas: \ent, \In listas: \TLista{\TLista{$dni : $\ent\ \times$ genero : \ent$}}}{\bool}
+	%    \modifica{parametro1, parametro2,..}
+	\requiere{expresionBooleana1}
+	\asegura{expresionBooleana2}
+\end{proc}
+
+    \item \textbf{Auxiliares y predicados sueltos}\\[1ex]
+    \pred{condicionesBasicas}{\In escrutinio: \TLista{\ent}, \In partidos : \ent}
+    {hayPartidosYblancos(escrutinio, partidos)\yLuego (\neg hayVotosNegativos(escrutinio)\land\neg hayEmpate(escrutinio))}
+    \pred{hayPartidosYblancos}{\In escrutinio: \TLista{\ent}, \In partidos : \ent} {\longitud{escrutinio}\geq partidos+1}
+    \pred{hayVotosNegativos}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i}{\ent}{0 \leq i< \longitud{escrutinio} \yLuego escrutinio[i]<0}}
+    \pred{hayEmpates}{\In escrutinio: \TLista{\ent}} {\existe[unalinea]{i,j}{\ent}{(0 \leq i,j< \longitud{escrutinio}-1 \land i\neq j) \implicaLuego escrutinio[i]=escrutinio[j]}}
+    \pred{superanUmbralElectoral}{\In escrutinio: \TLista{\ent}, \In cantidad: \ent} {(\displaystyle\sum_{i=0}^{\longitud{lista}-2} \IfThenElse{porcentaje(i, escrutinio) > 3}{1}{0}) \geq cantidad}
+    
+    \aux{porcentaje}{\In lista: \TLista{\ent}, \In indice: \ent}{ \float }{ 100*\frac{\displaystyle\sum_{i=0}^{\longitud{lista}-1} lista[i]}{lista[indice]} }    
+    
+\end{enumerate}
+
+
+\section{Implementación y demostraciones de correctitud}
+
+\end{document}
