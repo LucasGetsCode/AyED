@@ -1,33 +1,34 @@
 package aed;
 
 class VectorDeInts implements SecuenciaDeInts {
-    private static final int CAPACIDAD_INICIAL = 1;
-    private Array<Int> arr;
+    private static final int CAPACIDAD_INICIAL = 0;
+
+    private int[] arr;
 
     public VectorDeInts() {
-        Array<Int> res = new Array<Int>(0);
-        return res;
+        int[] res = new int[CAPACIDAD_INICIAL];
+        this.arr = res;
     }
 
     public VectorDeInts(VectorDeInts vector) {
-        Array<Int> res = new Array<Int>(vector.longitud());
+        int[] res = new int[vector.longitud()];
         for (int i = 0; i < vector.longitud(); i++) {
             res[i] = vector.arr[i];
         }
-        return res;
+        this.arr = res;
     }
 
     public int longitud() {
-        return len(this.arr);
+        return this.arr.length;
     }
 
     public void agregarAtras(int e) {
-        Array<Int> res = new Array<Int>(this.longitud() + 1);
+        int[] res = new int[this.longitud() + 1];
         for (int i = 0; i < this.longitud(); i++) {
             res[i] = this.arr[i];
         }
         res[this.longitud()] = e;
-        return res;
+        this.arr = res;
     }
 
     public int obtener(int i) {
@@ -39,7 +40,7 @@ class VectorDeInts implements SecuenciaDeInts {
     }
 
     public void quitarAtras() {
-        Array<Int> res = new Array<Int>(this.longitud() - 1);
+        int[] res = new int[this.longitud() - 1];
         for (int i = 0; i < this.longitud() - 1; i++) {
             res[i] = this.arr[i];
         }
@@ -47,18 +48,13 @@ class VectorDeInts implements SecuenciaDeInts {
     }
 
     public void modificarPosicion(int indice, int valor) {
-        if (i < this.longitud()) {
-            this.arr[i] = e;
-        } else {
-            raise exception;
+        if (indice < this.longitud()) {
+            this.arr[indice] = valor;
         }
     }
 
     public VectorDeInts copiar() {
-        Array<Int> res = new Array<Int>(this.longitud());
-        for (int i = 0; i < this.longitud(); i++) {
-            res[i] = this.arr[i];
-        }
+        VectorDeInts res = new VectorDeInts(this);
         return res;
     }
 

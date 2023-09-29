@@ -3,20 +3,26 @@ package aed;
 import java.util.Vector;
 
 public class Agenda {
+    private Fecha fecha;
+    private Vector<Recordatorio> recordatorios;
 
     public Agenda(Fecha fechaActual) {
-        throw new UnsupportedOperationException("No implementada aun");
+        this.fecha = new Fecha(fechaActual.dia(), fechaActual.mes());
     }
 
     public void agregarRecordatorio(Recordatorio recordatorio) {
-        throw new UnsupportedOperationException("No implementada aun");
-
+        this.recordatorios.add(recordatorio);
     }
 
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("No implementada aun");
-
+        String res;
+        res = this.fecha.toString() + "\n";
+        res += "=====\n";
+        for (int i = 0; i < recordatorios.size(); i++) {
+            res += recordatorios.elementAt(i).toString() + "\n";
+        }
+        return res;
     }
 
     public void incrementarDia() {
@@ -25,7 +31,7 @@ public class Agenda {
     }
 
     public Fecha fechaActual() {
-        throw new UnsupportedOperationException("No implementada aun");
+        return new Fecha(this.fecha.dia(), this.fecha.mes());
     }
 
 }
