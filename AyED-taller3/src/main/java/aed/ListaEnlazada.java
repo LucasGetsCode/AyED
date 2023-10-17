@@ -100,16 +100,30 @@ public class ListaEnlazada<T> implements Secuencia<T> {
             indice--;
         }
         primero.valor = elem;
-        primero = segundo;
+        primero = segundo.ant;
     }
 
     public ListaEnlazada<T> copiar() {
-        ListaEnlazada<T> nuevo = new ListaEnlazada<T>();
-
-        return nuevo;
+        ListaEnlazada<T> nuevaLista = new ListaEnlazada<T>();
+        Nodo actual = primero;
+        while (actual != null) {
+            Nodo nuevoNodo = new Nodo(actual.valor);
+            if (nuevaLista.primero == null) {
+                nuevaLista.primero = nuevoNodo;
+                nuevaLista.ultimo = nuevoNodo;
+            } else {
+                nuevoNodo.ant = nuevaLista.ultimo;
+                nuevaLista.ultimo.sig = nuevoNodo;
+                nuevaLista.ultimo = nuevoNodo;
+            }
+            actual = actual.sig;
+        }
+        return nuevaLista;
     }
 
     public ListaEnlazada(ListaEnlazada<T> lista) {
+        primero = null;
+        ultimo = null;
         Nodo actual = lista.primero;
         while (actual != null) {
             agregarAtras(actual.valor);
@@ -119,44 +133,46 @@ public class ListaEnlazada<T> implements Secuencia<T> {
 
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("No implementada aun");
+        Nodo actual = primero;
+        String res = "[";
+        while (actual != null) {
+            if (actual != primero) {
+                res += ", ";
+            }
+            res += actual.valor.toString();
+            actual = actual.sig;
+        }
+        res += "]";
+        return res;
     }
 
     private class ListaIterador implements Iterador<T> {
-        int dedito;
+        Nodo dedito;
 
         ListaIterador() {
-            dedito = 0;
+            dedito = primero;
         }
 
         public boolean haySiguiente() {
-            return primero.sig != null;
+            return dedito != null;
         }
 
         public boolean hayAnterior() {
-            return primero.ant != null;
+            if (dedito == null) {
+                return false;
+            } else {
+                return dedito.ant != null;
+            }
         }
 
         public T siguiente() {
-            int i = dedito;
-            dedito = dedito++;
-            while (i > 0) {
-                primero = primero.sig;
-                i--;
-            }
-            return primero.valor;
+
             // return elementos[i];
         }
 
         public T anterior() {
-            Nodo actual = new Nodo(null);
-            int i = dedito;
-            dedito = dedito--;
-            while (i > 0) {
-                primero = primero.ant;
-                i--;
-            }
-            return primero.valor;
+            dedito = dedito.ant;
+            return dedito.sig.valor;
             // return elementos[i];
         }
     }
