@@ -159,20 +159,32 @@ public class ListaEnlazada<T> implements Secuencia<T> {
 
         public boolean hayAnterior() {
             if (dedito == null) {
-                return false;
+                if (ultimo != null) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return dedito.ant != null;
             }
         }
 
         public T siguiente() {
-
+            T valor = dedito.valor;
+            dedito = dedito.sig;
+            return valor;
             // return elementos[i];
         }
 
         public T anterior() {
-            dedito = dedito.ant;
-            return dedito.sig.valor;
+            // dedito = dedito.ant;
+            // return dedito.sig.valor;
+            if (dedito == null) {
+                dedito = ultimo;
+            } else {
+                dedito = dedito.ant;
+            }
+            return dedito.valor;
             // return elementos[i];
         }
     }
