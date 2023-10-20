@@ -64,7 +64,47 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
 
 
     public void eliminar(T elem){
-        throw new UnsupportedOperationException("No implementada aun");
+        Nodo objetivo = busquedaNodo(primero, elem);
+        if (objetivo != null) {
+
+            boolean tienePadre = objetivo.padre != null;
+            boolean esHijoIzq;  // dir: false = izq, true = der
+            boolean esHijoDer;
+            if (tienePadre) {
+                esHijoIzq = (objetivo.padre.izq == objetivo);
+                esHijoDer = !esHijoIzq;
+            }
+            if (objetivo.izq == null && objetivo.der == null) { // no tiene hijos
+                if (!(tienePadre)) { // objetivo es el primero y único elemento
+                    primero = null;
+                } else { // objetivo no es el primero
+                    if (esHijoIzq) { // es el hijo izquierdo
+                        objetivo.padre.izq = null;
+                    } else { // es el hijo derecho
+                        objetivo.padre.der = null;
+                    }
+                }
+            } else if ((objetivo.izq != null) != (objetivo.der != null)) { // tiene un único hijo
+                if (!(tienePadre)) { // objetivo es el primero y tiene hijos
+                    if (objetivo.izq != null) {
+                        primero = objetivo.izq;
+                        maximo = anterior(objetivo, elem).valor; // el nuevo máximo es el segundo más grande
+                    } else {
+                        primero = objetivo.der;
+                        minimo = sucesor(objetivo, elem).valor; // el nuevo mínimo es el segundo más chico
+                    }
+                } else { // objetivo tiene padre y un único hijo
+                    if (objetivo.izq != null) {
+                        objetivo.padre = objetivo.izq;
+                        maximo = anterior(objetivo, elem).valor; // el nuevo máximo es el segundo más grande
+                    } else {
+                        primero = objetivo.der;
+                        minimo = sucesor(objetivo, elem).valor; // el nuevo mínimo es el segundo más chico
+                    }
+                }
+            }   
+
+        }
     }
 
     public String toString(){
@@ -113,20 +153,34 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
             padre.der = hijo;
         }
         hijo.padre = padre;
+        largo++;
     }
 
     private boolean perteneceRecursivo(Nodo raiz, T elem) {
         if (raiz == null) {
             return false;
-        } else if (raiz.valor.compareTo(elem) == 0) { // son iguales
-            return true;
         } else if (raiz.valor.compareTo(elem) > 0) { // elem es menor al valor del nodo
             return perteneceRecursivo(raiz.izq, elem);
         } else if (raiz.valor.compareTo(elem) < 0) { // elem es mayor al valor del nodo
             return perteneceRecursivo(raiz.der, elem);
-        } else {
-            return false;
+        } else { // son iguales
+            return true;
         }
     }
 
+    private Nodo busquedaNodo(Nodo raiz, T elem) {
+        if (raiz == null) {
+            return null;
+        } else if (raiz.valor.compareTo(elem) > 0) { // elem es menor al valor del nodo
+            return busquedaNodo(raiz.izq, elem);
+        } else if (raiz.valor.compareTo(elem) < 0) { // elem es mayor al valor del nodo
+            return busquedaNodo(raiz.der, elem);
+        } else { // son iguales
+            return raiz;
+        }
+    }
+
+    private Nodo sucesor(Nodo raiz, T elem) {
+        return primero;
+    }
 }
