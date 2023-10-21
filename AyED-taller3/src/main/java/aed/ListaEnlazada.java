@@ -1,6 +1,6 @@
 package aed;
 
-import java.util.*;
+//import java.util.*;
 
 public class ListaEnlazada<T> implements Secuencia<T> {
     private Nodo primero;
