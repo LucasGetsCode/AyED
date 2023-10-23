@@ -216,14 +216,39 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     }
 
     private Nodo sucesor(Nodo raiz, T elem) { // el siguiente más grande
-        if (raiz.der != null) {
-            return primero;
+        if (raiz.der != null) { // tiene rama derecha
+            Nodo actual = raiz.der;
+            while (actual.izq != null) {
+                actual = actual.izq;
+            }
+            return actual;
+        } else { // no tiene rama derecha
+            Nodo padre = raiz.padre;
+            Nodo actual = raiz;
+            while (padre != null && actual == padre.der) {
+                actual = padre;
+                padre = padre.padre;
+            }
+            return padre;
         }
-        return primero;
     }
 
     private Nodo antecesor(Nodo raiz, T elem) { // el siguiente más chico
-        return primero;
+        if (raiz.izq != null) { // tiene rama derecha
+            Nodo actual = raiz.izq;
+            while (actual.der != null) {
+                actual = actual.der;
+            }
+            return actual;
+        } else { // no tiene rama derecha
+            Nodo padre = raiz.padre;
+            Nodo actual = raiz;
+            while (padre != null && actual == padre.izq) {
+                actual = padre;
+                padre = padre.padre;
+            }
+            return padre;
+        }
     }
 
     private String toStringRecursivo(Nodo actual) {
