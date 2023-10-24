@@ -170,7 +170,6 @@ class ABBTests {
     @Test
     void siguiente_inorder() {
         ABB<Integer> conjunto = new ABB<Integer>();
-        Iterador<Integer> iterador = conjunto.iterador();
 
         conjunto.insertar(5);
         conjunto.insertar(4);
@@ -181,7 +180,8 @@ class ABBTests {
         conjunto.insertar(24);
         conjunto.insertar(22);
         conjunto.insertar(25);
-        
+
+        Iterador<Integer> iterador = conjunto.iterador();
         assertEquals(4, iterador.siguiente());
         assertEquals(5, iterador.siguiente());
         assertEquals(12, iterador.siguiente());
