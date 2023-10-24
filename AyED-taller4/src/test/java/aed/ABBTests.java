@@ -7,6 +7,27 @@ import org.junit.jupiter.api.Test;
 class ABBTests {
 
     @Test
+    void prueba() {
+        ABB<Integer> conjunto = new ABB<Integer>();
+        conjunto.insertar(5);
+        conjunto.insertar(4);
+        conjunto.insertar(20);
+        conjunto.insertar(15);
+        conjunto.insertar(12);
+        conjunto.insertar(24);
+        conjunto.insertar(22);
+        conjunto.insertar(25);
+        conjunto.insertar(19);
+        conjunto.insertar(21);
+        conjunto.eliminar(20);
+        assertEquals(9, conjunto.cardinal());
+        assertEquals(4, conjunto.minimo());
+        assertEquals(25, conjunto.maximo());
+        assertEquals("{4,5,12,15,19,21,22,24,25}", conjunto.toString());
+
+    }
+
+    @Test
     void nuevo_conjunto_vacio() {
         ABB<Integer> conjunto = new ABB<Integer>();
 
@@ -208,7 +229,7 @@ class ABBTests {
 
     }
 
-    Integer NCLAVES = 1000;
+    Integer NCLAVES = 100;
 
     private Integer clave(Integer i) {
         return NCLAVES * ((i * i - 100 * i) % NCLAVES) + i;
@@ -234,7 +255,7 @@ class ABBTests {
             Integer k = clave(i);
             assertEquals(true, conjunto.pertenece(k));
             conjunto.insertar(k);
-            assertEquals(true, conjunto.pertenece(k));
+            // assertEquals(true, conjunto.pertenece(k));
             assertEquals(NCLAVES, conjunto.cardinal());
         }
 

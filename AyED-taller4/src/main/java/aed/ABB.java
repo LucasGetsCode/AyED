@@ -64,7 +64,13 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         if (objetivo == null) {
             return false;
         } else {
-            return true;
+            if (objetivo.valor.compareTo(elem) == 0) {
+                return true;
+            } else {
+                System.out.print(objetivo.valor);
+                System.out.println(elem);
+                return false;
+            }
         }
         // return perteneceRecursivo(primero, elem);
     }
@@ -83,7 +89,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                 esHijoDer = !esHijoIzq;
             }
 
-            if (!tieneHijoIzq && !tieneHijoDer) { // no tiene hijos, caso 1
+            if (!tieneHijoIzq && !tieneHijoDer) { // no tiene hijos, caso 1, es hoja
                 largo--;
                 if (!tienePadre) { // objetivo es el primero y único elemento
                     primero = null;
@@ -99,6 +105,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                             maximo = antecesor(objetivo, elem).valor;
                         }
                     }
+                    objetivo.padre = null;
                 }
 
             } else if (tieneHijoIzq != tieneHijoDer) { // tiene un único hijo, caso 2
@@ -111,6 +118,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                         primero = objetivo.der;
                         minimo = sucesor(objetivo, elem).valor; // el nuevo mínimo es el segundo más chico
                     }
+                    primero.padre = null;
                 } else { // objetivo tiene padre y un único hijo
                     Nodo siguienteNodo;
                     if (tieneHijoIzq) {
@@ -131,9 +139,11 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                     } else { // esHijoDer
                         objetivo.padre.der = siguienteNodo;
                     }
+                    siguienteNodo.padre = objetivo.padre;
+                    objetivo.padre = null;
                 }
 
-            } else if (tieneHijoIzq && tieneHijoDer) { // tiene 2 hijos, caso 3
+            } else if (tieneHijoIzq && tieneHijoDer) { // tiene 2 hijos, caso 3, nunca va a ser el máximo o el mínimo
                 Nodo sucesor = sucesor(objetivo, elem);
                 T valor = sucesor.valor;
                 eliminar(valor);
@@ -144,7 +154,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                 }
                 objetivo.valor = valor;
                 if (objetivo.padre == null) {
-                    primero = sucesor;
+                    primero = objetivo;
                 }
             }
         }
