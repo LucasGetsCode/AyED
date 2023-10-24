@@ -84,6 +84,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
             }
 
             if (!tieneHijoIzq && !tieneHijoDer) { // no tiene hijos, caso 1
+                largo--;
                 if (!tienePadre) { // objetivo es el primero y único elemento
                     primero = null;
                 } else { // objetivo no es el primero
@@ -101,6 +102,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                 }
 
             } else if (tieneHijoIzq != tieneHijoDer) { // tiene un único hijo, caso 2
+                largo--;
                 if (!tienePadre) { // objetivo es el primero y tiene un hijo
                     if (tieneHijoIzq) {
                         primero = objetivo.izq;
@@ -135,6 +137,11 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                 Nodo sucesor = sucesor(objetivo, elem);
                 T valor = sucesor.valor;
                 eliminar(valor);
+                if (valor.compareTo(maximo) > 0) { // valor era el máximo
+                    maximo = valor;
+                } else if (valor.compareTo(minimo) < 0) {
+                    minimo = valor;
+                }
                 objetivo.valor = valor;
             }
         }
@@ -149,14 +156,18 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     }
 
     private class ABB_Iterador implements Iterador<T> {
-        private Nodo _actual;
+        private Nodo actual;
+
+        public ABB_Iterador() {
+            actual = busquedaNodo(primero, minimo);
+        }
 
         public boolean haySiguiente() {
-            throw new UnsupportedOperationException("No implementada aun");
+            return sucesor(actual, actual.valor) != null;
         }
 
         public T siguiente() {
-            throw new UnsupportedOperationException("No implementada aun");
+            return sucesor(actual, actual.valor).valor;
         }
     }
 
@@ -234,13 +245,13 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
     }
 
     private Nodo antecesor(Nodo raiz, T elem) { // el siguiente más chico
-        if (raiz.izq != null) { // tiene rama derecha
+        if (raiz.izq != null) { // tiene rama izquierda
             Nodo actual = raiz.izq;
             while (actual.der != null) {
                 actual = actual.der;
             }
             return actual;
-        } else { // no tiene rama derecha
+        } else { // no tiene rama izquierda
             Nodo padre = raiz.padre;
             Nodo actual = raiz;
             while (padre != null && actual == padre.izq) {
