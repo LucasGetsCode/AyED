@@ -22,7 +22,7 @@ class ABBTests {
         assertEquals(1, conjunto.cardinal());
         assertEquals(true, conjunto.pertenece(42));
     }
-    
+
     @Test
     void insertar_cinco_enteros() {
         ABB<Integer> conjunto = new ABB<Integer>();
@@ -42,14 +42,14 @@ class ABBTests {
         assertEquals(false, conjunto.pertenece(5));
         assertEquals(true, conjunto.pertenece(1));
     }
-    
+
     @Test
     void insertar_cinco_nombres() {
         ABB<String> conjunto = new ABB<String>();
-        
+
         // Todos los tipos de datos "Comparables" tienen el método compareTo()
-        assertEquals(true, "Jujuy".compareTo("La Pampa") < 0 );
-        assertEquals(true, "Jujuy".compareTo("Chubut") > 0 );
+        assertEquals(true, "Jujuy".compareTo("La Pampa") < 0);
+        assertEquals(true, "Jujuy".compareTo("Chubut") > 0);
 
         conjunto.insertar("La Pampa");
         assertEquals(1, conjunto.cardinal());
@@ -60,7 +60,7 @@ class ABBTests {
         assertEquals(2, conjunto.cardinal());
         assertEquals("Chubut", conjunto.minimo());
         assertEquals("La Pampa", conjunto.maximo());
-        
+
         conjunto.insertar("Formosa");
         assertEquals(3, conjunto.cardinal());
         assertEquals("Chubut", conjunto.minimo());
@@ -84,21 +84,20 @@ class ABBTests {
     @Test
     void eliminar_elemento_con_un_descendiente() {
         ABB<Integer> conjunto = new ABB<Integer>();
-        
+
         conjunto.insertar(5);
         conjunto.insertar(6);
         conjunto.insertar(7);
         conjunto.eliminar(6);
         assertEquals(2, conjunto.cardinal());
         assertEquals(5, conjunto.minimo());
-        assertEquals(7, conjunto.maximo());        
+        assertEquals(7, conjunto.maximo());
     }
 
-    
     @Test
     void eliminar_elemento_con_dos_descendientes() {
         ABB<Integer> conjunto = new ABB<Integer>();
-        
+
         conjunto.insertar(5);
         conjunto.insertar(4);
         conjunto.insertar(7);
@@ -107,14 +106,14 @@ class ABBTests {
         conjunto.eliminar(7);
         assertEquals(4, conjunto.cardinal());
         assertEquals(4, conjunto.minimo());
-        assertEquals(8, conjunto.maximo());        
-    
+        assertEquals(8, conjunto.maximo());
+
     }
 
     @Test
     void eliminar_raiz() {
         ABB<Integer> conjunto = new ABB<Integer>();
-        
+
         conjunto.insertar(5);
         conjunto.insertar(4);
         conjunto.insertar(7);
@@ -123,14 +122,14 @@ class ABBTests {
         conjunto.eliminar(5);
         assertEquals(4, conjunto.cardinal());
         assertEquals(4, conjunto.minimo());
-        assertEquals(8, conjunto.maximo());        
-    
+        assertEquals(8, conjunto.maximo());
+
     }
 
     @Test
     void eliminar_elemento_con_doble_descendencia() {
         ABB<Integer> conjunto = new ABB<Integer>();
-        
+
         conjunto.insertar(5);
         conjunto.insertar(4);
         conjunto.insertar(20);
@@ -149,7 +148,7 @@ class ABBTests {
     @Test
     void eliminar_elemento_con_sucesor_arriba() {
         ABB<Integer> conjunto = new ABB<Integer>();
-        
+
         conjunto.insertar(5);
         conjunto.insertar(4);
         conjunto.insertar(20);
@@ -191,7 +190,7 @@ class ABBTests {
         assertEquals(22, iterador.siguiente());
         assertEquals(24, iterador.siguiente());
         assertEquals(25, iterador.siguiente());
-        
+
     }
 
     @Test
@@ -209,9 +208,9 @@ class ABBTests {
 
     }
 
-    Integer NCLAVES = 1000; 
+    Integer NCLAVES = 1000;
 
-    private Integer clave(Integer i) {        
+    private Integer clave(Integer i) {
         return NCLAVES * ((i * i - 100 * i) % NCLAVES) + i;
     }
 
@@ -219,9 +218,9 @@ class ABBTests {
     void stress() {
 
         ABB<Integer> conjunto = new ABB<Integer>();
-        
+
         // Insertar
-        for (Integer i = 0; i < NCLAVES; i++ ){
+        for (Integer i = 0; i < NCLAVES; i++) {
             Integer k = clave(i);
             assertEquals(i, conjunto.cardinal());
             assertEquals(false, conjunto.pertenece(k));
@@ -229,14 +228,14 @@ class ABBTests {
             assertEquals(true, conjunto.pertenece(k));
         }
         assertEquals(NCLAVES, conjunto.cardinal());
-    
+
         // Insertar de nuevo
         for (Integer i = 0; i < NCLAVES; i++) {
             Integer k = clave(i);
             assertEquals(true, conjunto.pertenece(k));
             conjunto.insertar(k);
-            assertEquals(true,conjunto.pertenece(k));
-            assertEquals(NCLAVES,conjunto.cardinal());
+            assertEquals(true, conjunto.pertenece(k));
+            assertEquals(NCLAVES, conjunto.cardinal());
         }
 
         // Eliminar los valores para i par
@@ -249,16 +248,16 @@ class ABBTests {
             }
         }
         assertEquals(NCLAVES / 2, conjunto.cardinal());
-        
+
         // Eliminar los valores para i impar
         for (Integer i = 0; i < NCLAVES; i++) {
             Integer k = clave(i);
             if (i % 2 == 0) {
-                assertEquals(false,conjunto.pertenece(k));
+                assertEquals(false, conjunto.pertenece(k));
             } else {
                 assertEquals(true, conjunto.pertenece(k));
                 conjunto.eliminar(k);
-                assertEquals(false,conjunto.pertenece(k));
+                assertEquals(false, conjunto.pertenece(k));
             }
         }
         assertEquals(0, conjunto.cardinal());
@@ -270,6 +269,5 @@ class ABBTests {
         }
 
     }
-
 
 }

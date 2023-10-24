@@ -93,7 +93,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                         if (objetivo.valor == minimo) {
                             minimo = sucesor(objetivo, elem).valor;
                         }
-                    } else {
+                    } else { // esHijoDer
                         objetivo.padre.der = null;
                         if (objetivo.valor == maximo) {
                             maximo = antecesor(objetivo, elem).valor;
@@ -107,7 +107,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                     if (tieneHijoIzq) {
                         primero = objetivo.izq;
                         maximo = antecesor(objetivo, elem).valor; // el nuevo máximo es el segundo más grande
-                    } else {
+                    } else { // tieneHijoDer
                         primero = objetivo.der;
                         minimo = sucesor(objetivo, elem).valor; // el nuevo mínimo es el segundo más chico
                     }
@@ -119,7 +119,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                                                         // el nuevo máximo
                             maximo = antecesor(objetivo, elem).valor;
                         }
-                    } else {
+                    } else { // tieneHijoDer
                         siguienteNodo = objetivo.der;
                         if (objetivo.valor == minimo) { // si estoy eliminando el mínimo y su hijo es mayor a él, busco
                                                         // el nuevo mínimo
@@ -128,7 +128,7 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                     }
                     if (esHijoIzq) {
                         objetivo.padre.izq = siguienteNodo;
-                    } else {
+                    } else { // esHijoDer
                         objetivo.padre.der = siguienteNodo;
                     }
                 }
@@ -143,6 +143,9 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
                     minimo = valor;
                 }
                 objetivo.valor = valor;
+                if (objetivo.padre == null) {
+                    primero = sucesor;
+                }
             }
         }
     }
@@ -163,11 +166,15 @@ public class ABB<T extends Comparable<T>> implements Conjunto<T> {
         }
 
         public boolean haySiguiente() {
-            return sucesor(actual, actual.valor) != null;
+            return actual != null;
+            // return sucesor(actual, actual.valor) != null;
         }
 
         public T siguiente() {
-            return sucesor(actual, actual.valor).valor;
+            T valor = actual.valor;
+            actual = sucesor(actual, valor);
+            return valor;
+            // return sucesor(actual, actual.valor).valor;
         }
     }
 
