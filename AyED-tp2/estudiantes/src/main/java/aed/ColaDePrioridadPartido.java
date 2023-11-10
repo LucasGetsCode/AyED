@@ -4,27 +4,6 @@ public class ColaDePrioridadPartido { // Max Heap.
     Partido[] elems; // Para complejidades: n = longitud. Se toma el peor caso.
     int longitud; // Si no se aclara se asume que es O(1).
 
-    // public static void main(String[] args) {
-    // Integer[] arr = { 5, 2, 3, 1, 8, 2, 4, 10, 2, 7, 42, 73, 71, 13, 23, 53, 92,
-    // 10, -20 };
-    // ColaDePrioridad<Integer> cola = new ColaDePrioridad<Integer>(arr);
-    // cola.print();
-    // int max = cola.desencolar();
-    // cola.print();
-    // cola.encolar(max);
-    // cola.print();
-    // }
-
-    public class Partido implements Comparable<Partido> {
-        private int votos;
-        private String nombre;
-        private int id;
-
-        public int compareTo(Partido otro) {
-            return this.votos - otro.votos;
-        }
-    }
-
     public ColaDePrioridadPartido(int longitud) { // O(n)
         // this.elems = (Partido[]) new Comparable[longitud]; // O(n)
         this.elems = new Partido[longitud];
@@ -35,12 +14,12 @@ public class ColaDePrioridadPartido { // Max Heap.
         this.longitud = arreglo.length;
         Partido[] arr = new Partido[longitud]; // O(n)
         for (int i = 0; i < longitud; i++) { // O(n)
-            arr[i] = arreglo[i];
+            arr[i] = new Partido(arreglo[i]);
         }
         for (int i = longitud - 1; i >= 0; i--) { // O(n) por lo visto en clase del algoritmo de Floyd
             heapify(arr, i, longitud); // O(log(n) - altura(i))
         }
-        this.elems = arreglo;
+        this.elems = arr;
     }
 
     // requiere que longitud > 0
@@ -76,7 +55,8 @@ public class ColaDePrioridadPartido { // Max Heap.
     // requiere que longitud < elems.length
     public void encolar(Partido e) { // O(log n)
         if (longitud == elems.length) { // O(n), pero solo pasa cada por lo menos n inserciones, amortizado es O(1).
-                                        // Igualmente no vamos a utilizarlo en el tp, pero quería escribirlo para que
+                                        // Igualmente no vamos a utilizarlo en el tp, pero quería escribirlo para
+                                        // que
                                         // quede completo
             Partido[] new_elems = new Partido[longitud * 2];
             for (int k = 0; k < longitud; k++) { // O(n)

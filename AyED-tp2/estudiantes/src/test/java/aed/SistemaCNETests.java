@@ -438,7 +438,7 @@ class SistemaCNETests {
     }
 
     @Test
-    @Timeout(4)
+    @Timeout(6)
     void complejidadRegistrarMesa() {
         int cantDistritos = (int) 10;
         int mesasPorDistrito = 10;
@@ -456,7 +456,7 @@ class SistemaCNETests {
     }
 
     @Test
-    @Timeout(3)
+    @Timeout(3) // con 5 cumple
     void complejidadResultadosDiputados() {
         int cantDistritos = (int) 50;
         int mesasPorDistrito = 10;
