@@ -1,0 +1,25 @@
+Partido:
+Votos y id son mayores o iguales a 0.
+
+ColaDePrioridadPartido:
+Para todo índice i en entre 0 y longitud, si i*2+1 es menor a longitud, elems[i*2+2] es menor o igual a elems[i]. 
+Si i*2+2 es menor a longitud, elems[i*2+2] es menor o igual a elems[i].
+Es un árbol binario perfectamente balancedado implementado con array.
+Todo subárbol de un nodo i también es ColaDePrioridadPartido
+Es izquierdista.
+
+SistemaCNE:
+votos_totales es la sumatoria de los votos de todos los partidos y blancos en partidos.
+ballotage es partidos ordenado como ColaDePrioridadPartido teniendo los votos en blanco en 0.
+Para todo distrito en distritos, cant_bancas > 0, 0 <= min < max, 
+y min es igual al max+1 del anterior, mientras no sea el primnero.
+votos_totales es la sumatoria de los votos de todos los partidos y blancos en votos_partidos del distrito.
+Todo elemento de votos_partidos es mayor o igual a 0.
+Todas las posiciones de resultado_dHondt son 0 si y solo si dHdondt_calculado es false.
+dHdondt_calculado es true si y solo si resultado_dHondt corresponde a la
+asignación de bancas de diputados de cada partidos según el sistema dDhondt, siendo cada posición
+la correspondiente al partido que se encuentra en la misma posición de votos_partidos, que también es su id
+Si dHondt_calculado es false, dDhondt es votos_partidos ordenado como ColaDePrioridadPartido,
+pero con los partidos que no superaban el umbral del 3% puestos con votos 0 y sin votos en blanco.
+Las últimas posiciones de partidos y votos_partidos en cada distrito corresponden a los votos en blanco.
+

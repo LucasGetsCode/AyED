@@ -55,12 +55,8 @@ public class SistemaCNE {
             distrito.max = ultimasMesasDistritos[dist] - 1; // no inclusivo
             distrito.min = (dist == 0) ? 0 : (distritos[dist - 1].max + 1);
             distrito.votos_partidos = new int[nombresPartidos.length]; // O(P)
-            // distrito.resultado_dHondt = new int[nombresPartidos.length - 1]; // O(P)
             distrito.votos_totales = 0;
             distritos[dist] = distrito;
-
-            // distrito.dHondt = new ColaDePrioridadPartido(nombresPartidos.length - 1); //
-            // O(P)
         }
 
         for (int part = 0; part < partidos.length; part++) { // O(P)
@@ -72,11 +68,11 @@ public class SistemaCNE {
         }
     }
 
-    public String nombrePartido(int idPartido) {
+    public String nombrePartido(int idPartido) { // O(1)
         return partidos[idPartido].nombre;
     }
 
-    public String nombreDistrito(int idDistrito) {
+    public String nombreDistrito(int idDistrito) { // O(1)
         return distritos[idDistrito].nombre;
     }
 
@@ -84,13 +80,14 @@ public class SistemaCNE {
         return distritos[idDistrito].cant_bancas;
     }
 
-    public String distritoDeMesa(int idMesa) {
-        int indice = busquedaBinaria(distritos, idMesa);
+    public String distritoDeMesa(int idMesa) { // O(log(D))
+        int indice = busquedaBinaria(distritos, idMesa); // O(log(D))
         return distritos[indice].nombre;
     }
 
+    // O(P + log(D))
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) { // actaMesa.length = partidos.length
-        int indice = busquedaBinaria(distritos, idMesa);
+        int indice = busquedaBinaria(distritos, idMesa); // O(log(D))
         Distrito distrito = distritos[indice];
         for (int part = 0; part < actaMesa.length; part++) { // O(P)
             distrito.votos_partidos[part] += actaMesa[part].votosDiputados();
@@ -98,7 +95,10 @@ public class SistemaCNE {
             partidos[part].votos += actaMesa[part].votosPresidente();
             votos_totales += actaMesa[part].votosPresidente();
         }
+        int votos_blanco = partidos[partidos.length-1].votos;
+        partidos[partidos.length-1].votos = 0; // Si los votos en blanco son más de 45% no evita el ballotage, por lo tanto no los consideramos para el cálculo (sí el total)
         this.ballotage = new ColaDePrioridadPartido(partidos); // O(P)
+        partidos[partidos.length-1].votos = votos_blanco; // para no perder el registro en el sistema, les devolvemos el valor
 
         // ej 9
         distrito.dHondt_calculado = false;
@@ -114,11 +114,11 @@ public class SistemaCNE {
         distrito.dHondt = new ColaDePrioridadPartido(umbral); // O(P)
     }
 
-    public int votosPresidenciales(int idPartido) {
+    public int votosPresidenciales(int idPartido) { // O(1)
         return partidos[idPartido].votos;
     }
 
-    public int votosDiputados(int idPartido, int idDistrito) {
+    public int votosDiputados(int idPartido, int idDistrito) { // O(1)
         Distrito distrito = distritos[idDistrito];
         int partido = distrito.votos_partidos[idPartido];
         return partido;
@@ -141,18 +141,14 @@ public class SistemaCNE {
         return res;
     }
 
-    public boolean hayBallotage() {
-        boolean res;
-        int primero = ballotage.proximo().votos;
-        int segundo = ballotage.segundo().votos;
-        int ptaje_primero = porcentaje(primero, votos_totales);
-        int ptaje_segundo = porcentaje(segundo, votos_totales);
-        if (ptaje_primero >= 45) {
+    public boolean hayBallotage() { // O(1)
+        boolean res = true;
+        Partido primero = ballotage.proximo();
+        if (porcentaje(primero, votos_totales) >= 45) {
             res = false;
-        } else if (ptaje_primero >= 40 && (ptaje_primero - ptaje_segundo) >= 10) {
+        } else if (porcentaje(primero, votos_totales) >= 40
+                && porcentaje(primero, votos_totales) - porcentaje(ballotage.segundo(), votos_totales) >= 10) {
             res = false;
-        } else {
-            res = true;
         }
         return res;
     }
@@ -181,12 +177,12 @@ public class SistemaCNE {
         }
     }
 
-    private int porcentaje(Partido partido, int total) {
+    private int porcentaje(Partido partido, int total) { // O(1)
         float votos = partido.votos;
         return (int) (votos * 100 / total);
     }
 
-    private int porcentaje(int votos, int total) {
+    private int porcentaje(int votos, int total) { // O(1)
         return (int) ((float) votos * 100 / total);
     }
 
