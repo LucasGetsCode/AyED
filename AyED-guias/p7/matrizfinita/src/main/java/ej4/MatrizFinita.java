@@ -153,10 +153,11 @@ public final class MatrizFinita {
                         actual = actual.sig;
                     }
                 }
-                System.out.println(numero + " ");
+                System.out.print(numero + " ");
             }
-            System.out.println("\n");
+            System.out.print("\n");
         }
+        System.out.println("");
     }
 
     private int posicion(int f, int c) {
@@ -179,15 +180,18 @@ public final class MatrizFinita {
     public static void main(String[] args) {
         MatrizFinita matriz = new MatrizFinita(5, 5);
         matriz.definir(0, 0, 3);
-        System.out.println("hola");
         matriz.definir(2, 1, 4);
-        System.out.println("hola");
         matriz.definir(0, 0, 10);
         matriz.definir(4, 2, 2);
         matriz.definir(2, 3, -2);
         matriz.definir(3, 0, 1);
-        System.out.println("hola");
         matriz.print();
-        System.out.println("hola");
+        MatrizFinita otraMatriz = new MatrizFinita(5, 5);
+        for (int i = 0; i < 10; i++) {
+            otraMatriz.definir(i * 2 % 5, (i + 1) * 3 % 5, i);
+        }
+        otraMatriz.print();
+        matriz.sumarMatrices(otraMatriz);
+        matriz.print();
     }
 }
