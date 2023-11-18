@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.security.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
@@ -438,13 +440,12 @@ class SistemaCNETests {
     }
 
     @Test
-    @Timeout(6)
+    @Timeout(6) // con 10 corre
     void complejidadRegistrarMesa() {
         int cantDistritos = (int) 10;
         int mesasPorDistrito = 10;
         int cantPartidos = (int) 1e6;
         SistemaCNE sistema = inicializarSistemaCNE(cantDistritos, cantPartidos, mesasPorDistrito);
-
         int[][] votos = new int[cantPartidos][2];
         for (int idPartido = 0; idPartido < cantPartidos; idPartido++) {
             votos[idPartido][0] = idPartido * 1000;

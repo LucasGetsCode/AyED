@@ -4,9 +4,7 @@ public class SistemaCNE {
     Partido[] partidos;
     Distrito[] distritos;
     int votos_totales;
-    boolean ballotage;
-    Partido primero;
-    Partido segundo;
+    ColaDePrioridadPartido ballotage;
 
     public class Distrito {
         // Constantes
@@ -46,7 +44,7 @@ public class SistemaCNE {
             int[] ultimasMesasDistritos) { // O(D*P)
         this.partidos = new Partido[nombresPartidos.length]; // O(P)
         this.distritos = new Distrito[nombresDistritos.length]; // O(D)
-        this.ballotage = true;// new ColaDePrioridadPartido(nombresPartidos.length); // O(P)
+        this.ballotage = new ColaDePrioridadPartido(nombresPartidos.length); // O(P)
         this.votos_totales = 0;
 
         for (int dist = 0; dist < distritos.length; dist++) { // O(D*P) porque se ejecuta D veces un bloque de código
@@ -59,7 +57,6 @@ public class SistemaCNE {
             distrito.votos_partidos = new int[nombresPartidos.length]; // O(P)
             // distrito.resultado_dHondt = new int[nombresPartidos.length - 1]; // O(P)
             distrito.votos_totales = 0;
-            distrito.dHondt_calculado = false;
             distritos[dist] = distrito;
 
             // distrito.dHondt = new ColaDePrioridadPartido(nombresPartidos.length - 1); //
@@ -73,8 +70,6 @@ public class SistemaCNE {
             partido.id = part;
             partidos[part] = partido;
         }
-        primero = partidos[0];
-        segundo = new Partido(0, "cero", -1);
     }
 
     public String nombrePartido(int idPartido) {
@@ -94,25 +89,29 @@ public class SistemaCNE {
         return distritos[indice].nombre;
     }
 
-    // O(P + log(D))
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) { // actaMesa.length = partidos.length
-        int indice = busquedaBinaria(distritos, idMesa); // O(log(D))
+        int indice = busquedaBinaria(distritos, idMesa);
         Distrito distrito = distritos[indice];
         for (int part = 0; part < actaMesa.length; part++) { // O(P)
             distrito.votos_partidos[part] += actaMesa[part].votosDiputados();
             distrito.votos_totales += actaMesa[part].votosDiputados();
             partidos[part].votos += actaMesa[part].votosPresidente();
             votos_totales += actaMesa[part].votosPresidente();
-            if (part != partidos.length) {
-                actualizarPrimeros(partidos[part]); // O(1)
-            }
         }
+        this.ballotage = new ColaDePrioridadPartido(partidos); // O(P)
 
         // ej 9
         distrito.dHondt_calculado = false;
         distrito.resultado_dHondt = new int[partidos.length - 1]; // O(P)
-        int umbral = distrito.votos_totales * 3 / 100;
-        distrito.dHondt = new ColaDePrioridadPartido(distrito.votos_partidos, umbral); // O(P)
+        Partido[] umbral = new Partido[partidos.length - 1]; // O(P)
+        for (int i = 0; i < partidos.length - 1; i++) { // O(P)
+            if (porcentaje(distrito.votos_partidos[i], distrito.votos_totales) > 3) {
+                umbral[i] = new Partido(distrito.votos_partidos[i], partidos[i].nombre, i);
+            } else {
+                umbral[i] = new Partido(0, partidos[i].nombre, i);
+            }
+        }
+        distrito.dHondt = new ColaDePrioridadPartido(umbral); // O(P)
     }
 
     public int votosPresidenciales(int idPartido) {
@@ -132,10 +131,10 @@ public class SistemaCNE {
             ColaDePrioridadPartido votos = distrito.dHondt;
             // O(Dd*log(P)) porque se realiza Dd veces un bloque de código O(log(P))
             for (int i = 0; i < distrito.cant_bancas; i++) { // O(Dd)
-                Partido banca = votos.proximo(); // O(1)
+                Partido banca = votos.desencolar(); // O(log(P))
                 res[banca.id] += 1;
                 banca.votos = distrito.votos_partidos[banca.id] / (res[banca.id] + 1);
-                votos.reordenar(); // O(log(P))
+                votos.encolar(banca); // O(log(P))
             }
             distrito.dHondt_calculado = true;
         }
@@ -143,12 +142,17 @@ public class SistemaCNE {
     }
 
     public boolean hayBallotage() {
-        boolean res = true;
-        if (porcentaje(primero, votos_totales) >= 45) {
+        boolean res;
+        int primero = ballotage.proximo().votos;
+        int segundo = ballotage.segundo().votos;
+        int ptaje_primero = porcentaje(primero, votos_totales);
+        int ptaje_segundo = porcentaje(segundo, votos_totales);
+        if (ptaje_primero >= 45) {
             res = false;
-        } else if (porcentaje(primero, votos_totales) >= 40
-                && porcentaje(primero, votos_totales) - porcentaje(segundo, votos_totales) >= 10) {
+        } else if (ptaje_primero >= 40 && (ptaje_primero - ptaje_segundo) >= 10) {
             res = false;
+        } else {
+            res = true;
         }
         return res;
     }
@@ -179,45 +183,11 @@ public class SistemaCNE {
 
     private int porcentaje(Partido partido, int total) {
         float votos = partido.votos;
-        return (int) ((float) votos * 100 / total);
+        return (int) (votos * 100 / total);
     }
 
     private int porcentaje(int votos, int total) {
         return (int) ((float) votos * 100 / total);
-    }
-
-    private void actualizarPrimeros(Partido partido) { // O(1)
-        if (partido.votos >= segundo.votos && partido.id != primero.id) {
-            if (partido.votos >= primero.votos) {
-                segundo = primero;
-                primero = partido;
-            } else {
-                segundo = partido;
-            }
-        }
-    }
-
-    private boolean existeBallotage(Partido[] partidos) { // O(n), n = |partidos|
-        Partido primero = partidos[0];
-        Partido segundo = new Partido(0, "segundo", 0);
-        for (int i = 1; i < partidos.length; i++) { // O(n)
-            if (partidos[i].votos > segundo.votos) {
-                if (partidos[i].votos > primero.votos) {
-                    segundo = primero;
-                    primero = partidos[i];
-                } else {
-                    segundo = partidos[i];
-                }
-            }
-        }
-        boolean res = true;
-        if (porcentaje(primero, votos_totales) >= 45) {
-            res = false;
-        } else if (porcentaje(primero, votos_totales) >= 40
-                && porcentaje(primero, votos_totales) - porcentaje(segundo, votos_totales) >= 10) {
-            res = false;
-        }
-        return res;
     }
 
 }

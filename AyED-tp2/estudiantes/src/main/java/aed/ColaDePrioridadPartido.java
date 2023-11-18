@@ -1,8 +1,8 @@
 package aed;
 
 public class ColaDePrioridadPartido { // Max Heap.
-    Partido[] elems; // Para complejidades: n = longitud. Se toma el peor caso.
-    int longitud; // Si no se aclara se asume que es O(1).
+    private Partido[] elems; // Para complejidades: n = longitud. Se toma el peor caso.
+    private int longitud; // Si no se aclara se asume que es O(1).
 
     public ColaDePrioridadPartido(int longitud) { // O(n)
         // this.elems = (Partido[]) new Comparable[longitud]; // O(n)
@@ -13,10 +13,25 @@ public class ColaDePrioridadPartido { // Max Heap.
     public ColaDePrioridadPartido(Partido[] arreglo) { // O(n)
         this.longitud = arreglo.length;
         Partido[] arr = new Partido[longitud]; // O(n)
-        for (int i = 0; i < longitud; i++) { // O(n)
-            arr[i] = new Partido(arreglo[i]);
-        }
+        // for (int i = 0; i < longitud; i++) { // O(n)
+        // arr[i] = new Partido(arreglo[i]);
+        // }
         for (int i = longitud - 1; i >= 0; i--) { // O(n) por lo visto en clase del algoritmo de Floyd
+            arr[i] = new Partido(arreglo[i]);
+            heapify(arr, i, longitud); // O(log(n) - altura(i))
+        }
+        this.elems = arr;
+    }
+
+    public ColaDePrioridadPartido(int[] arreglo, int umbral) {
+        this.longitud = arreglo.length;
+        Partido[] arr = new Partido[longitud]; // O(n)
+        for (int i = longitud - 1; i >= 0; i--) { // O(n) por lo visto en clase
+            if (arreglo[i] > umbral && i != longitud - 1) {
+                arr[i] = new Partido(arreglo[i], String.valueOf(i), i);
+            } else {
+                arr[i] = new Partido(0, String.valueOf(i), i);
+            }
             heapify(arr, i, longitud); // O(log(n) - altura(i))
         }
         this.elems = arr;
@@ -74,6 +89,10 @@ public class ColaDePrioridadPartido { // Max Heap.
         }
     }
 
+    public void reordenar() {
+        heapify(elems, 0, longitud);
+    }
+
     public void print() {
         String res = "[";
         for (int i = 0; i < elems.length - 1; i++) {
@@ -112,7 +131,7 @@ public class ColaDePrioridadPartido { // Max Heap.
     // decir
     // su cumplejidad es O(la altura del subárbol correspondiente a i) =
     // O(log(max_long) - nivel(i))
-    private void heapify(Partido[] arr, int i, int max_long) { // O(log(max_long) - nivel(i))
+    public void heapify(Partido[] arr, int i, int max_long) { // O(log(max_long) - nivel(i))
         int hijoIzq = i * 2 + 1;
         int hijoDer = i * 2 + 2;
         boolean tieneHijoIzq = hijoIzq < max_long;
