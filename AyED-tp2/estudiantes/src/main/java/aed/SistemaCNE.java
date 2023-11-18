@@ -57,13 +57,9 @@ public class SistemaCNE {
             distrito.max = ultimasMesasDistritos[dist] - 1; // no inclusivo
             distrito.min = (dist == 0) ? 0 : (distritos[dist - 1].max + 1);
             distrito.votos_partidos = new int[nombresPartidos.length]; // O(P)
-            // distrito.resultado_dHondt = new int[nombresPartidos.length - 1]; // O(P)
             distrito.votos_totales = 0;
             distrito.dHondt_calculado = false;
             distritos[dist] = distrito;
-
-            // distrito.dHondt = new ColaDePrioridadPartido(nombresPartidos.length - 1); //
-            // O(P)
         }
 
         for (int part = 0; part < partidos.length; part++) { // O(P)
@@ -77,11 +73,11 @@ public class SistemaCNE {
         segundo = new Partido(0, "cero", -1);
     }
 
-    public String nombrePartido(int idPartido) {
+    public String nombrePartido(int idPartido) { // O(1)
         return partidos[idPartido].nombre;
     }
 
-    public String nombreDistrito(int idDistrito) {
+    public String nombreDistrito(int idDistrito) { // O(1)
         return distritos[idDistrito].nombre;
     }
 
@@ -89,8 +85,8 @@ public class SistemaCNE {
         return distritos[idDistrito].cant_bancas;
     }
 
-    public String distritoDeMesa(int idMesa) {
-        int indice = busquedaBinaria(distritos, idMesa);
+    public String distritoDeMesa(int idMesa) { // O(log(D))
+        int indice = busquedaBinaria(distritos, idMesa); // O(log(D))
         return distritos[indice].nombre;
     }
 
@@ -115,11 +111,11 @@ public class SistemaCNE {
         distrito.dHondt = new ColaDePrioridadPartido(distrito.votos_partidos, umbral); // O(P)
     }
 
-    public int votosPresidenciales(int idPartido) {
+    public int votosPresidenciales(int idPartido) { // O(1)
         return partidos[idPartido].votos;
     }
 
-    public int votosDiputados(int idPartido, int idDistrito) {
+    public int votosDiputados(int idPartido, int idDistrito) { // O(1)
         Distrito distrito = distritos[idDistrito];
         int partido = distrito.votos_partidos[idPartido];
         return partido;
@@ -177,12 +173,12 @@ public class SistemaCNE {
         }
     }
 
-    private int porcentaje(Partido partido, int total) {
+    private int porcentaje(Partido partido, int total) { // O(1)
         float votos = partido.votos;
         return (int) ((float) votos * 100 / total);
     }
 
-    private int porcentaje(int votos, int total) {
+    private int porcentaje(int votos, int total) { // O(1)
         return (int) ((float) votos * 100 / total);
     }
 
