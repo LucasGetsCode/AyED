@@ -178,10 +178,6 @@ public class SistemaCNE {
         return (int) ((float) votos * 100 / total);
     }
 
-    private int porcentaje(int votos, int total) { // O(1)
-        return (int) ((float) votos * 100 / total);
-    }
-
     private void actualizarPrimeros(Partido partido) { // O(1)
         if (partido.votos >= segundo.votos && partido.id != primero.id) {
             if (partido.votos >= primero.votos) {
@@ -191,29 +187,6 @@ public class SistemaCNE {
                 segundo = partido;
             }
         }
-    }
-
-    private boolean existeBallotage(Partido[] partidos) { // O(n), n = |partidos|
-        Partido primero = partidos[0];
-        Partido segundo = new Partido(0, "segundo", 0);
-        for (int i = 1; i < partidos.length; i++) { // O(n)
-            if (partidos[i].votos > segundo.votos) {
-                if (partidos[i].votos > primero.votos) {
-                    segundo = primero;
-                    primero = partidos[i];
-                } else {
-                    segundo = partidos[i];
-                }
-            }
-        }
-        boolean res = true;
-        if (porcentaje(primero, votos_totales) >= 45) {
-            res = false;
-        } else if (porcentaje(primero, votos_totales) >= 40
-                && porcentaje(primero, votos_totales) - porcentaje(segundo, votos_totales) >= 10) {
-            res = false;
-        }
-        return res;
     }
 
 }

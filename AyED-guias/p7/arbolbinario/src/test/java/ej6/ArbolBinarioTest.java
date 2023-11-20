@@ -2,8 +2,6 @@ package ej6;
 
 import org.junit.jupiter.api.Test;
 
-import ej6.ArbolBinario;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -20,6 +18,7 @@ class ArbolBinarioTest {
 
     @Test
     void nivel4Completo() {
+        @SuppressWarnings("unchecked")
         Nodo<Integer>[] nodos = (Nodo<Integer>[]) new Nodo[15];
         for (int i = 0; i < nodos.length; i++) {
             nodos[i] = new Nodo<Integer>(i * i % 10);
@@ -36,6 +35,7 @@ class ArbolBinarioTest {
 
     @Test
     void nivel4Incompleto() {
+        @SuppressWarnings("unchecked")
         Nodo<Integer>[] nodos = (Nodo<Integer>[]) new Nodo[13];
         for (int i = 0; i < nodos.length; i++) {
             nodos[i] = new Nodo<Integer>(i * i % 10);
@@ -52,6 +52,7 @@ class ArbolBinarioTest {
 
     @Test
     void nivel1Incompleto() {
+        @SuppressWarnings("unchecked")
         Nodo<Integer>[] nodos = (Nodo<Integer>[]) new Nodo[0];
         for (int i = 0; i < nodos.length; i++) {
             nodos[i] = new Nodo<Integer>(i * i % 10);
@@ -64,6 +65,7 @@ class ArbolBinarioTest {
 
     @Test
     void nivel1Completo() {
+        @SuppressWarnings("unchecked")
         Nodo<Integer>[] nodos = (Nodo<Integer>[]) new Nodo[1];
         for (int i = 0; i < nodos.length; i++) {
             nodos[i] = new Nodo<Integer>(i * i % 10);
@@ -76,6 +78,7 @@ class ArbolBinarioTest {
 
     @Test
     void nivel2Incompleto() {
+        @SuppressWarnings("unchecked")
         Nodo<Integer>[] nodos = (Nodo<Integer>[]) new Nodo[2];
         for (int i = 0; i < nodos.length; i++) {
             nodos[i] = new Nodo<Integer>(i * i % 10);
@@ -89,6 +92,7 @@ class ArbolBinarioTest {
 
     @Test
     void nivel10Completo() {
+        @SuppressWarnings("unchecked")
         Nodo<Integer>[] nodos = (Nodo<Integer>[]) new Nodo[1023];
         for (int i = 0; i < nodos.length; i++) {
             nodos[i] = new Nodo<Integer>(i * i % 10);
@@ -111,6 +115,7 @@ class ArbolBinarioTest {
 
     @Test
     void nivel10Incompleto() {
+        @SuppressWarnings("unchecked")
         Nodo<Integer>[] nodos = (Nodo<Integer>[]) new Nodo[965];
         for (int i = 0; i < nodos.length; i++) {
             nodos[i] = new Nodo<Integer>(i * i % 10);

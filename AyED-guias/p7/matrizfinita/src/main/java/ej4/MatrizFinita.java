@@ -160,10 +160,6 @@ public final class MatrizFinita {
         System.out.println("");
     }
 
-    private int posicion(int f, int c) {
-        return columnas * f + c;
-    }
-
     private int posicion(Nodo nodo) {
         if (nodo != null) {
             return columnas * nodo.fila + nodo.col;

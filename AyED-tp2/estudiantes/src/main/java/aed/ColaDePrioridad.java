@@ -14,7 +14,7 @@ public class ColaDePrioridad<T extends Comparable<T>> { // Max Heap.
     // cola.encolar(max);
     // cola.print();
     // }
-
+    @SuppressWarnings("unchecked")
     public ColaDePrioridad(int longitud) { // O(n)
         this.elems = (T[]) new Comparable[longitud]; // O(n)
         this.longitud = longitud;
@@ -22,6 +22,7 @@ public class ColaDePrioridad<T extends Comparable<T>> { // Max Heap.
 
     public ColaDePrioridad(T[] arreglo) { // O(n)
         this.longitud = arreglo.length;
+        @SuppressWarnings("unchecked")
         T[] arr = (T[]) new Comparable[longitud]; // O(n)
         for (int i = 0; i < longitud; i++) { // O(n)
             arr[i] = arreglo[i];
@@ -67,6 +68,7 @@ public class ColaDePrioridad<T extends Comparable<T>> { // Max Heap.
         if (longitud == elems.length) { // O(n), pero solo pasa cada por lo menos n inserciones, amortizado es O(1).
                                         // Igualmente no vamos a utilizarlo en el tp, pero quería escribirlo para que
                                         // quede completo
+            @SuppressWarnings("unchecked")
             T[] new_elems = (T[]) new Comparable[longitud * 2];
             for (int k = 0; k < longitud; k++) { // O(n)
                 new_elems[k] = elems[k];
