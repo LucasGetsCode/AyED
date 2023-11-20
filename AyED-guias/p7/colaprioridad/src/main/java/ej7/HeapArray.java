@@ -30,7 +30,7 @@ public class HeapArray<T extends Comparable<T>> implements HeapInterface<T> { //
         for (int i = longitud - 1; i >= 0; i--) { // O(n) por lo visto en clase del algoritmo de Floyd
             heapify(arr, i, longitud); // O(log(n) - altura(i))
         }
-        this.elems = arreglo;
+        this.elems = arr;
     }
 
     // requiere que longitud > 0
