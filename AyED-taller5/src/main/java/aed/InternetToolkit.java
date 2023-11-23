@@ -47,13 +47,24 @@ public class InternetToolkit {
             IPv4Address ip = new IPv4Address(ipv4[i]);
             ipv4adresses[i] = ip;
         }
-        for (int m = 0; m < 4; m++) {
+        for (int m = 3; m >= 0; m--) {
+            for (int l = 0; l < 256; l++) {
+                bucketDebuckets[m][l] = new ListaEnlazada<IPv4Address>();                
+            }
             for (int i = 0; i < ipv4adresses.length; i++) {
                 int octeto = ipv4adresses[i].getOctet(m);
                 bucketDebuckets[m][octeto].agregarAtras(ipv4adresses[i]);
             }
+            int j = 0;
+            for (int i = 0; i < 256; i++) {
+                Iterador<IPv4Address> it = bucketDebuckets[m][i].iterador();
+                while (it.haySiguiente()) {
+                    ipv4adresses[j] = it.siguiente();
+                    j++;
+                }
+            }
         }
-        return null;
+        return ipv4adresses;
     }
 
 }
